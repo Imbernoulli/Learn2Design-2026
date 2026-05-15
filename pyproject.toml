@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "learn2design"
+version = "0.1.0"
+description = "A learning platform for design optimization"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+keywords = ["design", "optimization", "machine-learning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "dfbench[cuda13]"
+]
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["learn2design"]
+namespaces = false
+
+
+[project.optional-dependencies]
+
+[project.urls]
+Homepage = "https://github.com/artificial-scientist-lab/Learn2Design-2026"
+Repository = "https://github.com/artificial-scientist-lab/Learn2Design-2026.git"
+Documentation = "https://learn2design.readthedocs.io"
+"Bug Tracker" = "https://github.com/artificial-scientist-lab/Learn2Design-2026/issues"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=learn2design --cov-report=html --cov-report=term-missing"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
