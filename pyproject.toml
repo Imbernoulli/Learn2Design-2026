@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "dfbench[cuda13]"
+    "dfbench",
 ]
 
 
@@ -29,6 +29,14 @@ namespaces = false
 
 
 [project.optional-dependencies]
+
+cuda12 = [
+    "dfbench[cuda12]",
+]
+
+cuda13 = [
+    "dfbench[cuda13]",
+]
 
 [project.urls]
 Homepage = "https://github.com/artificial-scientist-lab/Learn2Design-2026"
