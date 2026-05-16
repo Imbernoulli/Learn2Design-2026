@@ -9,8 +9,8 @@ within a fixed compute budget.
 
 You submit algorithms. The best algorithm over 10 problems wins.
 
-> **Status:** Pre-launch. The starting kit is being finalised. Expect
-> breaking changes until the first month's problems are released.
+> **Status:** Pre-launch. The starting kit is being finalised. Further baselines
+> and their results will be added until the start of the competition.
 
 ---
 
@@ -164,8 +164,8 @@ Information about how to submit will be provided once the competition officially
 
 | Date | Event |
 |---|---|
-| TBA | Dataset release + competition start |
-| TBA | Monthly public leaderboards open |
+| Expected: 01.07.2026 | Start of competition |
+| 1st week of August, September, October | Release of public leaderboard |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
 
@@ -189,7 +189,7 @@ opens.
 ```bibtex
 @misc{learn2design2026,
   title  = {Learn2Design 2026: Black-box Optimization for Gravitational-Wave Detector Design},
-  author = {Artificial Scientist Lab},
+  author = {Learn2Design collaboration},
   year   = {2026},
   url    = {https://github.com/artificial-scientist-lab/Learn2Design-2026},
 }
