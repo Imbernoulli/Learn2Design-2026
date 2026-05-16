@@ -2,15 +2,19 @@
 
 ## What you submit
 
-A submission is a single `.py` file placed in `submit/` and opened as a pull
-request (or uploaded via the competition portal once it is live). The file
-must contain exactly one class that subclasses `OptimizationAlgorithm` from
-`dfbench.core`. The class may import any pip-installable Python package
-(see [Dependencies](#dependencies) for the one exception).
+A submission is a single `.py` file uploaded through the competition portal.
+The file must contain exactly one class that subclasses
+`OptimizationAlgorithm` from `dfbench.core`. The class may import any
+pip-installable Python package (see [Dependencies](#dependencies) for the one
+exception).
+
+Competition entries are not submitted as public pull requests. This keeps
+unreleased methods private until the organizers evaluate them, which reduces
+copying between participants.
 
 If you need extra Python packages installed into the eval environment, ship a
 `requirements.txt` next to your `.py` file. If you need to bundle weights or
-data files, place them in the same directory and load them by relative path
+data files, place them in the same directory and load them by relative path;
 your whole submission directory is mounted read-only inside the container.
 
 ---

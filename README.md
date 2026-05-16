@@ -41,8 +41,9 @@ pip install -e .
 ```
 
 This pulls in [`dfbench`](https://pypi.org/project/dfbench/) (the benchmark
-framework) and [`differometor`](https://pypi.org/project/differometor/) (the
-JAX-based interferometer simulator).
+framework). `dfbench` in turn uses
+[`differometor`](https://pypi.org/project/differometor/), the JAX-based
+interferometer simulator.
 
 Smoke-test:
 
@@ -52,7 +53,7 @@ python -m learn2design.scripts.uifo_random_search -s 0
 
 ---
 
-## The contract
+## Minimal working example:
 
 A submission is one class subclassing `OptimizationAlgorithm`:
 
@@ -88,6 +89,8 @@ class MyAlgorithm(OptimizationAlgorithm):
 That is the entire contract. The `Objective` handles seeding, history,
 checkpointing, and budget enforcement. You write the loop.
 
+
+
 ---
 
 ## What `Objective` gives you
@@ -113,17 +116,21 @@ Full reference: [`dfbench` docs](https://pypi.org/project/dfbench/).
 ```
 Learn2Design-2026/
 ├── learn2design/
-│   ├── example_algorithms/     # Reference algorithms — read these first
+│   ├── example_algorithms/  # Reference algorithm implementations
 │   │   ├── random_search.py
 │   │   └── adam_gd.py
-│   └── scripts/                # One-file runners per baseline
+│   └── scripts/             # Minimal runnable entry points
 │       ├── uifo_random_search.py
 │       └── uifo_adam_gd.py
-├── pyproject.toml
-└── README.md
+├── docs/
+│   ├── submission.md        # Submission rules
+│   ├── scoring.md           # Scoring and leaderboard details
+│   ├── faq.md
+│   └── dfbench/             # Expanded benchmark framework documentation
+└── pyproject.toml
 ```
 
-The repository is intentionally small. We tried to condese relevant content for the user to see.
+The repository is intentionally small. We tried to condense the relevant content for users.
 
 ---
 
@@ -144,15 +151,15 @@ Run any of them with `python -m learn2design.scripts.<name> -s <seed>`.
 
 ## Submitting
 
-1. Fork the repo. Place a single `.py` file in `submit/<your-handle>/`.
-2. Add a `metadata.yaml` next to it with your handle, team members, and a
-   one-line description.
-3. If you need extra packages, add a `requirements.txt` in the same directory.
-4. Open a pull request titled `[submission] <your-handle>: <algo name>`.
+Submit a single `.py` file through the competition portal once it is live.
+Public pull requests are not used for competition entries.
 
-CI runs a smoke test; once it passes, your submission is queued for the next
-evaluation batch. The submission present in `main` at the monthly deadline
-counts for that month. In the meantime, iterate locally:
+If you need extra packages, include a `requirements.txt` alongside your
+submission file. If you need to bundle weights or data files, place them next
+to the submission and load them by relative path.
+
+The portal runs a smoke test before queuing the submission for evaluation. In
+the meantime, iterate locally:
 
 ```bash
 python -m learn2design.scripts.uifo_adam_gd -s 42
@@ -174,7 +181,7 @@ FAQ: [docs/faq.md](docs/faq.md)
 
 | Date | Event |
 |---|---|
-| TBA | Starting kit + month 1 problems released |
+| TBA | Dataset release + competition start |
 | TBA | Monthly public leaderboards open |
 | TBA | Final submission deadline |
 | NeurIPS 2026 | Private leaderboard announced |
@@ -187,7 +194,7 @@ FAQ: [docs/faq.md](docs/faq.md)
 - **Issues / questions:** <https://github.com/artificial-scientist-lab/Learn2Design-2026/issues>
 - **Simulator:** [`differometor`](https://pypi.org/project/differometor/)
 - **Benchmark framework:** [`dfbench`](https://pypi.org/project/dfbench/)
-- **Group:** [Artificial Scientist Lab](https://github.com/artificial-scientist-lab)
+- **Group:** [Artificial Scientist Lab](https://www.artificial-scientist-lab.ai/)
 
 A website, FAQ page, and contact email will be added before the competition
 opens.
