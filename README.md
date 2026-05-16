@@ -156,29 +156,7 @@ Run any of them with `python -m learn2design.scripts.<name> -s <seed>`.
 
 ## Submitting
 
-Submit a single `.py` file through the competition portal once it is live.
-Public pull requests are not used for competition entries.
-
-If you need extra packages, include a `requirements.txt` alongside your
-submission file. If you need to bundle weights or data files, place them next
-to the submission and load them by relative path.
-
-The portal runs a smoke test before queuing the submission for evaluation. In
-the meantime, iterate locally:
-
-```bash
-python -m learn2design.scripts.uifo_adam_gd -s 42
-```
-
-- **Time budget:** 4 h of `Objective.value` time + 30 min overhead per topology.
-  JIT compilation before `start_logging()` is free.
-- **Dependencies:** any pip-installable package; only `import differometor`
-  directly is banned.
-- **Scoring:** mean best-loss across 10 topologies. `NaN` / crashes → `+inf`.
-
-Full rules: [docs/submission.md](docs/submission.md) ·
-Scoring formula: [docs/scoring.md](docs/scoring.md) ·
-FAQ: [docs/faq.md](docs/faq.md)
+Information about how to submit will be provided once the competition officially starts.
 
 ---
 
