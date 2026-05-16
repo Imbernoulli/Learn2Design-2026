@@ -40,6 +40,11 @@ cd Learn2Design-2026
 pip install -e .
 ```
 
+If you want GPU support, make sure you have CUDA 12 or 13 installed:
+```bash
+pip install -e ".[cuda13]" # or ".[cuda12]"
+```
+
 This pulls in [`dfbench`](https://pypi.org/project/dfbench/) (the benchmark
 framework). `dfbench` in turn uses
 [`differometor`](https://pypi.org/project/differometor/), the JAX-based
