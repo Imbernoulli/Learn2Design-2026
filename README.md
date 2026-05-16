@@ -7,8 +7,7 @@ continuous parameters (laser powers, mirror reflectivities, grid distances, ...)
 Your job is to find the parameter vector that maximises detector sensitivity,
 within a fixed compute budget.
 
-You submit algorithms, not parameter vectors. We run them on our hardware
-against problems you have never seen.
+You submit algorithms. The best algorithm over 10 problems wins.
 
 > **Status:** Pre-launch. The starting kit is being finalised. Expect
 > breaking changes until the first month's problems are released.
@@ -17,16 +16,19 @@ against problems you have never seen.
 
 ## How it works
 
-- Each month we publish 10 new public topologies. Submissions are scored on
-  the average best loss across all 10.
-- Every run gets 4 hours of wall-clock time on a single A100 (or
-  equivalent), no internet, fixed Python environment.
+- Each month we publish 10 new public topologies. Submissions are scored on the 
+  average best loss across all 10 of them.
+- Your score will get published to that month's leaderboard.
+- Every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
+  an AMD EPYC 7302 CPU.
 - The final leaderboard is decided on 10 held-out private topologies that
   are never published.
-- Final score = mean best-loss reached on the 10 private problems.
+- Your final score will be the mean of the best loss reached on the 10 private 
+  problems. Lower is better.
 
-A "topology" fixes the wiring of optical components; you only optimize the
-continuous parameters attached to it.
+A "topology" fixes the choice of optical components for a UIFO; you only optimize 
+the continuous parameters attached to it. These could be laser power, mirror 
+reflectivity, grid distance, etc..
 
 ---
 
