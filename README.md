@@ -183,8 +183,8 @@ FAQ: [docs/faq.md](docs/faq.md)
 |---|---|
 | TBA | Dataset release + competition start |
 | TBA | Monthly public leaderboards open |
-| TBA | Final submission deadline |
-| NeurIPS 2026 | Private leaderboard announced |
+| 15.10.2026 | Final submission deadline |
+| Before workshop | Private leaderboard announced |
 
 ---
 
