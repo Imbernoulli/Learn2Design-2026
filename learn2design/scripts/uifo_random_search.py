@@ -17,9 +17,9 @@ obj = Objective(
     problem,
     verbose=1,
     max_time= 60*60*24,
-    print_every=1000,
+    print_every=100,
     save_params_history=True,
-    save_to_file_every=1000,
+    save_to_file_every=100,
     display_mode="log",
 )
 
@@ -29,7 +29,6 @@ optimizer = RandomSearch()
 # Run optimization - returns Objective instance
 optimizer.optimize(
     obj,
-    max_iterations=100,
     random_seed=seed,
 )
 
