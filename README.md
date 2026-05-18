@@ -177,7 +177,7 @@ Category-level overview across the baseline families:
 | 15. `EvoxPSO (PSO)` | Evolutionary | Standard Particle Swarm Optimization (EvoX) simulating swarm behavior | 4.1 ± 0.2 | [EvoxPSO variants](docs/dfbench/Algorithms.md#L226) |
 | 16. `BotorchTuRBO` | Surrogate-based | Trust Region Bayesian Optimization (TuRBO) using BoTorch's Gaussian processes | 4.5 ± 0.1 | [BotorchTuRBO](docs/dfbench/Algorithms.md#L639) |
 | 17. `BotorchBO` | Surrogate-based | Bayesian Optimization (BoTorch) using Gaussian processes and qLogEI acquisition | 4.7 ± 0.2 | [BotorchBO](docs/dfbench/Algorithms.md#L619) |
-| 18. `RandomSearch` | Evolutionary | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](docs/dfbench/Algorithms.md#L218) |
+| 18. `RandomSearch` | — | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](docs/dfbench/Algorithms.md#L218) |
 | 19. `VAESampling top2%` | Generative | Variational Autoencoder sampling by latent-space search with Bayesian Optimization. Trained on top 2% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#L957) |
 | 20. `VAESampling top10%` | Generative | VAE trained on 10% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#L957) |
 
