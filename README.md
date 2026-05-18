@@ -11,6 +11,8 @@ The objective function is pure and jax-based. It supports gradients and Hessians
 
 You submit algorithms. The best algorithm over 10 problems wins.
 
+To develop your algorithm, you have access to an auto-differentiating Simulator and 30,000 high-quality examples from a 360,000 GPU-hour run through EuroHPC.
+
 > **Status:** Pre-launch. The starting kit is being finalised. Further baselines
 > and their results will be added until the start of the competition. `dfbench`'s
 > repository will soon be made public.
