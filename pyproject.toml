@@ -24,7 +24,7 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["learn2design"]
+include = ["learn2design", "learn2design.*"]
 namespaces = false
 
 
