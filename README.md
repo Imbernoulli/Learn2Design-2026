@@ -154,6 +154,8 @@ Because this repository depends on `dfbench` as an external package, it does
 not contain the `dfbench` source tree itself. The links below therefore open
 the matching documented algorithm section in [`docs/dfbench/Algorithms.md`](docs/dfbench/Algorithms.md), using the exact class names and variants from that documentation.
 
+A loss of zero means that the optimizer has discovered the best known human designed gravitational wave detector (within the same technical resources, such as arm lengths). **Losses below zero are possible and [expected](https://journals.aps.org/prx/abstract/10.1103/PhysRevX.15.021012)**.
+
 Category-level overview across the baseline families:
 
 ![Baseline category overview](baselines/category_algorithms_loss_mean_sem.png)
