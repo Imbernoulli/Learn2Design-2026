@@ -99,7 +99,20 @@ class MyAlgorithm(OptimizationAlgorithm):
 That is the entire contract. The `Objective` handles seeding, history,
 checkpointing, and budget enforcement. You write the loop.
 
+To see an example for execution, look at a script like [uifo_random_search.py](learn2design/scripts/uifo_random_search.py) or [uifo_adam_gd.py](learn2design/scripts/uifo_adam_gd.py). The simplest form of execution looks like this:
 
+```python
+from dfbench.problems import UIFOProblem
+from dfbench import Objective
+from learn2design.example_algorithms import MyAlgorithm
+
+UIFOProblem(topology_seed=42)  # Random topology with seed 42
+objective = Objective(UIFOProblem(), max_time=10*60)  # 10 Minutes of optimization
+
+optimizer = MyAlgorithm
+
+optimizer.optimize()
+```
 
 ---
 
@@ -124,25 +137,37 @@ Full reference: [`dfbench` docs](docs/dfbench/Objective-API-Reference.md).
 
 ## Repository layout
 
-```
-Learn2Design-2026/
-├── learn2design/
-│   ├── example_algorithms/  # Reference algorithm implementations
-│   │   ├── random_search.py
-│   │   └── adam_gd.py
-│   └── scripts/             # Minimal runnable entry points
-│       ├── uifo_random_search.py
-│       └── uifo_adam_gd.py
-├── docs/
-│   ├── submission.md        # Submission rules
-│   ├── scoring.md           # Scoring and leaderboard details
-│   ├── FAQ.md               # WIP FAQ page
-│   └── dfbench/             # Expanded benchmark framework documentation
-│       └── FAQ.md
-└── pyproject.toml
+The repository is organized around a small number of entry points:
+
+| Path | Purpose |
+|---|---|
+| `learn2design/` | Package code, including example algorithms and runnable scripts. |
+| `baselines/` | Baseline result plots grouped by algorithm family. |
+| `docs/` | Competition docs plus the bundled `dfbench` reference pages. |
+| `pyproject.toml` | Package metadata and dependency definitions. |
+
+<details>
+<summary>Show a more detailed layout</summary>
+
+```text
+learn2design/
+├── example_algorithms/  # Reference implementations
+└── scripts/             # Minimal runnable entry points
+
+docs/
+├── submission.md        # Submission rules
+├── scoring.md           # Scoring and leaderboard details
+├── FAQ.md               # Competition FAQ
+└── dfbench/             # Benchmark framework docs (including Objective API)
+
+baselines/
+├── evolutionary/
+├── generative/
+├── gradient_based/
+└── surrogate_based/
 ```
 
-The repository is intentionally small. We tried to condense the relevant content for users.
+</details>
 
 ---
 

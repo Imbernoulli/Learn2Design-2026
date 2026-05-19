@@ -1,35 +1,30 @@
 """Test script for RandomSearch optimizer."""
 
-import argparse
-
 from dfbench.problems import UIFOProblem
 from dfbench import Objective
 
 from learn2design.example_algorithms import RandomSearch
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--seed", type=int, default=None)
-seed = parser.parse_args().seed
+SEED = 42
 
-# Optimization workflow with RandomSearch
-problem = UIFOProblem(topology_seed=seed)
+problem = UIFOProblem(topology_seed=SEED)  # Create UIFO instance with a random topology
 obj = Objective(
     problem,
     verbose=1,
-    max_time= 60*60*24,
-    print_every=100,
+    max_time= 60*60*4,  # 4 hours
+    print_every=1,
     save_params_history=True,
     save_to_file_every=100,
-    display_mode="log",
+    display_mode="live",  # Change to "log" when running without a live display (e.g., on a cluster)
 )
 
 optimizer = RandomSearch()
 
 
-# Run optimization - returns Objective instance
+# Run optimization
 optimizer.optimize(
     obj,
-    random_seed=seed,
+    random_seed=SEED,  # This is only for random param generation in RandomSearch
 )
 
 obj.save_run_data()
@@ -43,4 +38,4 @@ print(f"    {obj.params_history_bounded[0]}")
 print("Best parameters:")
 print(f"    {obj.best_params_bounded}")
 print("Seed:")
-print(f"    {seed}")
+print(f"    {SEED}")
