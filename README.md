@@ -61,6 +61,29 @@ Smoke-test one UIFO evaluation (may take a few minutes to JIT-compile) with [smo
 ```bash
 python learn2design/scripts/smoke_test.py
 ```
+
+---
+
+## Dataset
+
+The precomputed UIFO design corpus is available in [`dataset/`](dataset/).
+It contains [`dataset.h5`](dataset/dataset.h5),
+a compact HDF5 dataset with 29,650 pure-broadband optimized setups. Each entry
+stores a topology string, bounded parameter vector, saved loss, sensitivity
+curve, power data, complexity, and metadata such as `unique_hash`. The folder
+also includes a standalone Plotly HTML swarmplot for browsing losses and topology
+groups interactively.
+
+Start with the dataset-specific guide in [`dataset/README.md`](dataset/README.md).
+It documents the HDF5 layout, efficient lazy slicing of parameter and power
+pools, and includes runnable examples for loading an entry and evaluating it
+with `UIFOProblem`.
+
+```bash
+python dataset/examples/load_entry.py --index 0
+python dataset/examples/evaluate_entry.py --index 0
+```
+
 ---
 
 ## Minimal working example
@@ -142,6 +165,7 @@ The repository is organized around a small number of entry points:
 | Path | Purpose |
 |---|---|
 | `learn2design/` | Package code, including example algorithms and runnable scripts. |
+| `dataset/` | Precomputed UIFO design corpus, dataset README, and loading/evaluation examples. |
 | `baselines/` | Baseline result plots grouped by algorithm family. |
 | `docs/` | Competition docs plus the bundled `dfbench` reference pages. |
 | `pyproject.toml` | Package metadata and dependency definitions. |
@@ -159,6 +183,12 @@ docs/
 ├── scoring.md           # Scoring and leaderboard details
 ├── FAQ.md               # Competition FAQ
 └── dfbench/             # Benchmark framework docs (including Objective API)
+
+dataset/
+├── dataset.h5
+├── dataset_dashboard.html
+├── README.md
+└── examples/            # Loading and evaluation examples
 
 baselines/
 ├── evolutionary/
@@ -236,6 +266,7 @@ Information about how to submit will be provided once the competition officially
 
 - **Repository:** <https://github.com/artificial-scientist-lab/Learn2Design-2026>
 - **Issues / questions:** <https://github.com/artificial-scientist-lab/Learn2Design-2026/issues>
+- **Dataset guide:** [`dataset/README.md`](dataset/README.md)
 - **Simulator:** [`differometor`](https://pypi.org/project/differometor/)
 - **Benchmark framework:** [`dfbench`](docs/dfbench/Architecture-Overview.md)
 - **Group:** [Artificial Scientist Lab](https://www.artificial-scientist-lab.ai/)
