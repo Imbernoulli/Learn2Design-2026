@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/evolutionary/jax_es.py
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float
@@ -7,7 +8,7 @@ from dfbench.core.objective import Objective
 
 
 class JAXMuLambdaES(OptimizationAlgorithm):
-    """(μ,λ)-ES with truncation selection. See dfbench's `jax_es.py` for full docs."""
+    """(μ,λ)-ES with truncation selection. See reference link above for full docs."""
 
     algorithm_str = "jax_mu_lambda_es"
 

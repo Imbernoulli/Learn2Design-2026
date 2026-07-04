@@ -93,7 +93,8 @@ The dataset was distilled and curated from the much larger [GraviTune Dataset](h
 A submission is one class subclassing `OptimizationAlgorithm`:
 
 ```python
-from dfbench.core import Objective, OptimizationAlgorithm
+from dfbench import Objective
+from dfbench.core.algorithm import OptimizationAlgorithm
 from jaxtyping import Array, Float
 
 
@@ -131,12 +132,11 @@ from dfbench.problems import UIFOProblem
 from dfbench import Objective
 from learn2design.example_algorithms import MyAlgorithm
 
-UIFOProblem(topology_seed=42)  # Random topology with seed 42
-objective = Objective(UIFOProblem(), max_time=10*60)  # 10 Minutes of optimization
+problem = UIFOProblem(topology_seed=42)  # Random topology with seed 42
+objective = Objective(problem, max_time=10*60)  # 10 Minutes of optimization
 
-optimizer = MyAlgorithm
-
-optimizer.optimize()
+optimizer = MyAlgorithm()
+optimizer.optimize(objective)
 ```
 
 ---

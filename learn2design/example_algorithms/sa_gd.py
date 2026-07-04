@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/gradient_based/sa_gd.py
 import math
 
 import jax
@@ -9,7 +10,7 @@ from dfbench.core.objective import Objective
 
 
 class SAGD(OptimizationAlgorithm):
-    """Simulated-Annealing Gradient Descent (arXiv:2107.07558). See dfbench's `sa_gd.py`."""
+    """Simulated-Annealing Gradient Descent (arXiv:2107.07558). See reference link above."""
 
     algorithm_str = "sa_gd"
 

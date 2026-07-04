@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/gradient_based/adam_gd.py
 import optax
 from jaxtyping import Array, Float
 
@@ -6,7 +7,7 @@ from dfbench.core.objective import Objective
 
 
 class AdamGD(OptimizationAlgorithm):
-    """Adam with gradient clipping. See dfbench's `adam_gd.py` for full docs."""
+    """Adam with gradient clipping. See reference link above for full docs."""
 
     algorithm_str = "adam_gd"
 

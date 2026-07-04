@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/gradient_based/na_adam_gd.py
 import jax
 import jax.numpy as jnp
 import optax
@@ -34,7 +35,7 @@ def _cap_step_relative(step, reference, ratio):
 
 
 class NAAdamGD(OptimizationAlgorithm):
-    """Noisy-Annealing Adam. See dfbench's `na_adam_gd.py` for full docs."""
+    """Noisy-Annealing Adam. See reference link above for full docs."""
 
     algorithm_str = "na_adam_gd"
 

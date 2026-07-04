@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/evolutionary/jax_es.py
 from collections import deque
 
 import jax
@@ -9,7 +10,7 @@ from dfbench.core.objective import Objective
 
 
 class JAXOnePlusOneES(OptimizationAlgorithm):
-    """(1+1)-ES with the 1/5 success rule. See dfbench's `jax_es.py` for full docs."""
+    """(1+1)-ES with the 1/5 success rule. See reference link above for full docs."""
 
     algorithm_str = "jax_1p1es"
 

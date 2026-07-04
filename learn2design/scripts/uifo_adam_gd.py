@@ -15,7 +15,7 @@ obj = Objective(
     print_every=1,
     save_params_history=True,
     save_to_file_every=100,
-    display_mode="live",  # Change to "log" when running without a live display (e.g., on a cluster)
+    display_mode="log",  # Use "live" for a live display on a local machine
 )
 
 optimizer = AdamGD()

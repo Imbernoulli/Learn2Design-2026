@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/evolutionary/random_search.py
 from jaxtyping import Array, Float
 
 from dfbench.core.algorithm import OptimizationAlgorithm
@@ -5,7 +6,7 @@ from dfbench.core.objective import Objective
 
 
 class RandomSearch(OptimizationAlgorithm):
-    """Uniform random sampling within bounds. See dfbench's `random_search.py` for full docs."""
+    """Uniform random sampling within bounds. See reference link above for full docs."""
 
     algorithm_str = "random_search"
 

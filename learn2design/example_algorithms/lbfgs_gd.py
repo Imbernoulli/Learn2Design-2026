@@ -1,3 +1,4 @@
+# Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/gradient_based/lbfgs_gd.py
 import jax
 import jax.numpy as jnp
 import optax
@@ -8,7 +9,7 @@ from dfbench.core.objective import Objective
 
 
 class LBFGSGD(OptimizationAlgorithm):
-    """L-BFGS via optax with a JIT-compiled loop. See dfbench's `lbfgs_gd.py` for full docs."""
+    """L-BFGS via optax with a JIT-compiled loop. See reference link above for full docs."""
 
     algorithm_str = "lbfgs_gd"
 
