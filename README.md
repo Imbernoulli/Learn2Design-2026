@@ -84,6 +84,8 @@ python dataset/examples/load_entry.py --index 0
 python dataset/examples/evaluate_entry.py --index 0
 ```
 
+The dataset was distilled and curated from the much larger [GraviTune Dataset](https://github.com/artificial-scientist-lab/GraviTune-Dataset).
+
 ---
 
 ## Minimal working example
