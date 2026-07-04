@@ -15,7 +15,10 @@ To develop your algorithm, you have access to an auto-differentiating Simulator 
 
 > **Status:** Pre-launch. The starting kit is being finalised. Further baselines
 > and their results will be added until the start of the competition. `dfbench`
-> (v0.2.0) is [public on PyPI](https://pypi.org/project/dfbench/).
+> (v0.2.0) is [public on PyPI](https://pypi.org/project/dfbench/). Its full
+> documentation lives in the
+> [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki),
+> and a bundled copy is in [`docs/dfbench/`](docs/dfbench/).
 
 ---
 

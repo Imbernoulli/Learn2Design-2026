@@ -14,13 +14,16 @@ NoiseInjection = Literal["update", "params"]
 
 def _anneal_sigma(progress, sigma_start, sigma_end, schedule):
     progress = float(jnp.clip(progress, 0.0, 1.0))
+
     if schedule == "linear":
         return sigma_start + (sigma_end - sigma_start) * progress
+
     eps = 1e-12
     s0 = max(float(sigma_start), 0.0)
     s1 = max(float(sigma_end), 0.0)
     if s0 <= 0.0:
         return 0.0
+
     return s0 * (max(s1, eps) / max(s0, eps)) ** progress
 
 
@@ -74,11 +77,13 @@ class NAAdamGD(OptimizationAlgorithm):
         obj.start_logging()
 
         iteration = 0
+
         while not obj.budget_exceeded:
             if noise_anneal_budget_fraction is not None:
                 progress = obj.budget_progress_fraction / noise_anneal_budget_fraction
             else:
                 progress = iteration / max(1, noise_anneal_iters)
+
             sigma_t = _anneal_sigma(progress, noise_std_start, noise_std_end, noise_schedule)
 
             loss, grads = obj.value_and_grad(params)
@@ -91,8 +96,10 @@ class NAAdamGD(OptimizationAlgorithm):
             if sigma_t > 0:
                 rng_key, subkey = jax.random.split(rng_key)
                 noise_step = jax.random.normal(subkey, shape=params.shape) * sigma_t
+
                 if noise_clip_norm is not None:
                     noise_step = _clip_step_by_global_norm(noise_step, noise_clip_norm)
+
                 if (
                     noise_cap_relative_to_update is not None
                     and iteration >= noise_cap_start_iter
@@ -100,6 +107,7 @@ class NAAdamGD(OptimizationAlgorithm):
                     noise_step = _cap_step_relative(
                         noise_step, updates, float(noise_cap_relative_to_update)
                     )
+
                 if noise_injection == "update":
                     updates = updates + noise_step
 

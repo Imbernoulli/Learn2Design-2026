@@ -78,13 +78,16 @@ class JAXMuLambdaES(OptimizationAlgorithm):
 
             losses = jnp.where(jnp.isfinite(losses), losses, jnp.float32(1e30))
 
+            # Truncation selection: keep best μ (comma semantics)
             sorted_idx = jnp.argsort(losses)[:mu]
             selected = offspring[sorted_idx]
             mean = jnp.clip(jnp.mean(selected, axis=0), lb, ub)
 
+            # Cumulative step-size adaptation
             mean_selected_loss = float(jnp.mean(losses[sorted_idx]))
             improved = 1.0 if mean_selected_loss < prev_mean_loss else 0.0
             prev_mean_loss = mean_selected_loss
+
             p_succ = (1.0 - c_s) * p_succ + c_s * improved
             sigma = sigma * float(jnp.exp(jnp.array((p_succ - target_succ) / d_sigma)))
             sigma = max(sigma, sigma_min)
