@@ -14,8 +14,8 @@ You submit algorithms. The best algorithm over 10 problems wins.
 To develop your algorithm, you have access to an auto-differentiating Simulator and 30,000 high-quality examples from a 360,000 GPU-hour run through EuroHPC.
 
 > **Status:** Pre-launch. The starting kit is being finalised. Further baselines
-> and their results will be added until the start of the competition. `dfbench`'s
-> repository will soon be made public.
+> and their results will be added until the start of the competition. `dfbench`
+> (v0.2.0) is [public on PyPI](https://pypi.org/project/dfbench/).
 
 ---
 
@@ -52,7 +52,7 @@ If you want GPU support, make sure you have CUDA 12 or 13 installed:
 pip install -e ".[cuda13]" # or ".[cuda12]"
 ```
 
-This pulls in [`dfbench`](docs/dfbench/Architecture-Overview.md) (the benchmark
+This pulls in [`dfbench`](docs/dfbench/Architecture-Overview.md) (v0.2.0, the benchmark
 framework). `dfbench` in turn uses
 [`differometor`](https://pypi.org/project/differometor/), the JAX-based
 interferometer simulator.
@@ -184,7 +184,17 @@ docs/
 ├── submission.md        # Submission rules
 ├── scoring.md           # Scoring and leaderboard details
 ├── FAQ.md               # Competition FAQ
-└── dfbench/             # Benchmark framework docs (including Objective API)
+└── dfbench/             # dfbench 0.2.0 reference pages
+    ├── Architecture-Overview.md
+    ├── Objective-API-Reference.md
+    ├── Problems.md
+    ├── Algorithms.md
+    ├── Implementing-a-New-Algorithm.md   # step-by-step guide for new algorithms
+    ├── Benchmarking.md
+    ├── Metrics-Reference.md
+    ├── Storage-and-Checkpointing.md      # organizer-facing checkpoint docs
+    ├── Utilities-and-Helpers.md
+    └── FAQ.md
 
 dataset/
 ├── dataset.h5

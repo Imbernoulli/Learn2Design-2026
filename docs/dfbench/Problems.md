@@ -29,12 +29,14 @@ Defines the minimal interface every problem must implement:
 |--------------------|------|-------------|
 | `name` | `str` | Human-readable identifier. |
 | `objective_function` | `Callable` | Loss in bounded parameter space. |
-| `sigmoid_objective_function` | `Callable` | Loss in unbounded space (sigmoid bounding applied internally). |
 | `bounds` | `Array[2, n_params]` | `[lower_bounds, upper_bounds]` for each parameter. |
 | `optimization_pairs` | `list[tuple[str, str]]` | `(component_name, property_name)` tuples mapping each parameter index to a Differometor component. |
 | `n_params` | `int` | Number of parameters = `len(optimization_pairs)`. |
+| `to_spec() → dict` | `dict` | Reconstructive spec — a small, JSON-serialisable dict sufficient to rebuild an equivalent problem instance (see [Reconstruction & Problem Spec](#reconstruction--problem-spec) below). |
 
-**Rationale — two objective functions:** See the [Architecture Overview](Architecture-Overview#1-problem-layer) for why both bounded and unbounded variants exist.
+**Rationale — bounded problem contract:** Problems expose the bounded loss only; `Objective` owns any mapping required by algorithms that search in unbounded coordinates.
+
+**Rationale — reconstructive spec:** A checkpoint is only useful for resume or provenance if the originating problem can be rebuilt. `to_spec()` encodes the problem's constructor arguments so a saved run is fully self-describing (see [Storage & Checkpointing](Storage-and-Checkpointing)).
 
 ### `OpticalSetupProblem` (Optical Base)
 
@@ -43,9 +45,11 @@ Extends `ContinuousProblem` with optics-specific functionality shared by all Dif
 - **Frequency grid:** A log-spaced array of frequencies from 20 Hz to 5 kHz (configurable via `n_frequencies`).
 - **Target sensitivity:** Stored in `_target_sensitivities`, computed from the reference detector design at initialization.
 - **`calculate_sensitivity(params)`:** Computes the sensitivity curve for a given parameter vector — used for plotting, not optimization.
-- **`output_to_files(…)`:** Writes JSON parameter/loss files and PNG plots (loss curve + sensitivity curve vs. target).
 - **`bounds_overrides`:** All concrete problems accept optional property-level bound overrides (narrowing only).
+- **`signal_floor`:** All concrete problems floor detector signal magnitudes before sensitivity normalization. Defaults to `1e-20`.
 - **`print_bounds()`:** Prints the effective per-parameter bounds currently used by the problem.
+
+> **Note:** `OpticalSetupProblem` no longer has an `output_to_files` method. Human-readable JSON/PNG output is now a *derived view* produced by `RunDataExporter` from a `RunState` snapshot (see [Storage & Checkpointing](Storage-and-Checkpointing)). Keeping I/O on the problem was a responsibility violation — it mixed file layout, plotting, and timestamping into the mathematical problem definition.
 
 ---
 
@@ -69,6 +73,7 @@ problem = VoyagerProblem(n_frequencies=100)
 problem = VoyagerProblem(
    n_frequencies=100,
    bounds_overrides={"tuning": (0, 45)},
+   signal_floor=1e-20,
 )
 problem.print_bounds()
 ```
@@ -122,6 +127,7 @@ problem = VoyagerTuningProblem(n_frequencies=100)
 problem = VoyagerTuningProblem(
    n_frequencies=100,
    bounds_overrides={"tuning": (0, 45)},
+   signal_floor=1e-20,
 )
 problem.print_bounds()
 ```
@@ -159,7 +165,7 @@ All optimized parameters are mirror tuning angles in degrees:
 | Difficulty | Hard — loss < 0 is very difficult to achieve |
 
 ```python
-problem = ConstrainedVoyagerProblem(n_frequencies=100)
+problem = ConstrainedVoyagerProblem(n_frequencies=100, signal_floor=1e-20)
 ```
 
 #### Differences from `VoyagerProblem`
@@ -191,8 +197,39 @@ problem = ConstrainedVoyagerProblem(n_frequencies=100)
    problem = ConstrainedVoyagerProblem(power_penalty_fn=my_quadratic_penalty)
    ```
 
-**Rationale — penalty squashing:** A raw penalty can become orders of magnitude larger than the sensitivity loss, making gradient-based optimizers ignore sensitivity entirely. The default `squashed_relu_penalty` bounds the penalty contribution while preserving its gradient direction.\
+   The penalty function can also be swapped **after** the problem has been constructed (e.g. after wrapping it in an `Objective`), via `Objective.set_penalty_fn(fn)`. This re-traces the problem's JIT-compiled `objective_function` and re-binds the Objective's cached evaluation callables, so the new penalty takes effect on subsequent evaluations. It must be called before `Objective.start_logging()`:
+
+   ```python
+   from dfbench import Objective
+   from dfbench.problems import zero_penalty
+
+   problem = ConstrainedVoyagerProblem()
+   obj = Objective(problem)
+   obj.set_penalty_fn(zero_penalty)   # disable the penalty term
+   obj.warmup_value()
+   obj.start_logging()
+   ```
+
+   Only problems with a power-constraint path accept `set_penalty_fn`. The opt-in marker is the class attribute `_supports_power_penalty`; `ConstrainedVoyagerProblem` and `UIFOProblem` set it to `True`, while `VoyagerProblem` and `VoyagerTuningProblem` leave it `False` and raise `RuntimeError` if the call is attempted, even though they inherit the method from the optical base class.
+
+**Rationale (penalty squashing):** A raw penalty can become orders of magnitude larger than the sensitivity loss, making gradient-based optimizers ignore sensitivity entirely. The default `squashed_relu_penalty` bounds the penalty contribution while preserving its gradient direction.\
 It could very well be that other penalty functions work better for certain algorithms (or even Adam). Feel free to play around!
+
+#### Aux diagnostics
+
+The constrained problems also expose a JIT-compiled `objective_function_aux(params)` alongside `objective_function`. It returns `(loss, aux)` where `aux` is a pytree dict carrying the loss decomposition and physical diagnostics for that eval:
+
+| Key | Shape | Description |
+|-----|-------|-------------|
+| `sensitivity_loss` | scalar | The unpenalised sensitivity loss. |
+| `penalty` | scalar | The summed penalty contribution. |
+| `is_feasible` | scalar bool | `True` iff every per-group power is at or below its threshold. This is a physical check, independent of the active `power_penalty_fn` preset, so it stays meaningful even when the penalty is disabled with `zero_penalty`. |
+| `violations` | `(n_constraints, n_freq)` | Per-constraint penalty values. |
+| `power_values` | dict with `hard`, `soft`, `detector` leaves | Raw per-group power arrays. |
+
+Because `aux` is a JAX pytree, `objective_function_aux` vmapps cleanly: a batched call adds a leading batch dim to every leaf, including the `power_values` sub-arrays.
+
+The `Objective` wraps this with `value_aux`, `value_and_grad_aux`, `vmap_value_aux`, and `vmap_value_and_grad_aux`. These thread aux through logging and the save-token system: each aux field has its own token (`sensitivity_loss`, `penalty`, `is_feasible`, `power_values`, `violations`) plus a `batched_*` variant and `aux` / `batched_aux` convenience aliases. When a `batched_*` token is off and the non-batched token is on, batched aux entries are reduced to the representative point picked by the loss minimum, so the recorded `is_feasible` and `violations` reflect that best point. `Objective.best_is_feasible` reports the feasibility of the best-loss point from that recorded history. Full reference in the [Objective API Reference](Objective-API-Reference.md).
 
 ---
 
@@ -231,6 +268,7 @@ problem = UIFOProblem(
 | `centers` | `None` | Interior cell dict. Must be paired with `boundaries`. Mutually exclusive with `topology_seed` and `topology`. |
 | `boundaries` | `None` | Boundary cell dict. Must be paired with `centers`. Mutually exclusive with `topology_seed` and `topology`. |
 | `power_penalty_fn` | `squashed_relu_penalty` | Per-element penalty function `fn(value, threshold)`. See presets above. |
+| `signal_floor` | `1e-20` | Lower floor for detector signal magnitudes before sensitivity normalization. |
 
 > **Backwards compatibility:** `RandomUIFOProblem` is an alias for `UIFOProblem`.
 
@@ -263,5 +301,92 @@ A Quasi-Universal Interferometer Field Optimization (UIFO) is a grid-based inter
 #### Design note
 
 The reference sensitivity target is always the Voyager detector. Since the UIFO is overparameterized (many more degrees of freedom than Voyager), it can in principle achieve better sensitivity but the large parameter space makes optimization harder.
+
+---
+
+## Reconstruction & Problem Spec
+
+Every problem implements `to_spec() → dict`, which returns a small, JSON-serialisable dict capturing everything needed to rebuild an equivalent instance in a separate process. This is the reconstructive contract that makes checkpoints self-describing.
+
+Starting with dfbench 0.1.1, the raw `to_spec()` dict is wrapped in a typed `ProblemSpec` container (`dfbench.core.problem.ProblemSpec`) that carries an explicit schema `version` and a separated `params` field. Checkpoints embed the container (`ProblemSpec.to_dict()` → `{"type", "version", "params"}`) in `RunMetadata.extra["problem_spec"]`, so consumers get a stable, schema-validated identity instead of an untyped dict. Legacy flat specs (`{"type", <kwargs>}`) written by older versions are still accepted on load via `ProblemSpec.from_dict`.
+
+### How it works
+
+1. Each problem subclass implements `to_spec()`, returning a dict with a `"type"` key (the registry name) plus its constructor arguments.
+2. The `@register_problem` decorator registers the class in a module-level registry under its `__name__` (or a custom `spec_type`).
+3. `ContinuousProblem.to_problem_spec()` wraps the `to_spec()` dict into a typed `ProblemSpec` container. Subclasses rarely need to override this; the default implementation is sufficient as long as `to_spec()` is correct.
+4. `build_problem_from_spec(spec)` accepts either a `ProblemSpec` or a raw dict (typed container or legacy flat form; both are normalized via `ProblemSpec.from_dict`) and reconstructs the instance.
+5. `Objective._build_metadata()` calls `problem.to_problem_spec()` and stores the resulting dict in `RunMetadata.extra["problem_spec"]`, so every checkpoint records its originating problem.
+
+```python
+from dfbench.core.problem import ProblemSpec, build_problem_from_spec
+
+# A spec captured from a live problem
+ps = problem.to_problem_spec()
+# ProblemSpec(type="VoyagerProblem", params={"n_frequencies": 100, ...}, version=1)
+
+# JSON-safe dict for embedding in checkpoint metadata
+spec_dict = ps.to_dict()
+# {"type": "VoyagerProblem", "version": 1, "params": {"n_frequencies": 100, ...}}
+
+# Rebuild an equivalent problem later, in any process
+problem2 = build_problem_from_spec(ps)
+# or, equivalently, from the dict form:
+problem2 = build_problem_from_spec(spec_dict)
+```
+
+### The `ProblemSpec` container
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | `str` | Registry key matching a `@register_problem`-decorated class |
+| `params` | `dict[str, Any]` | Constructor keyword arguments forwarded to the problem class on reconstruction |
+| `version` | `int` | Container schema version (defaults to `PROBLEM_SPEC_VERSION = 1`); governs the `type`/`version`/`params` layout, not the per-problem constructor args |
+
+`ProblemSpec.from_dict` accepts both the typed container and the legacy flat form, so checkpoints written before the typed container existed still load. `ProblemSpec.__post_init__` validates that `type` is a non-empty string, `params` is a dict, and `version` is an int. A malformed or tampered spec becomes a deterministic `ValueError` at the trust boundary instead of a silent corruption downstream.
+
+### Per-problem spec contents
+
+The `params` sub-dict is whatever each problem's `to_spec()` returns minus the `"type"` key:
+
+| Problem | `params` fields | Reconstruction path |
+|---------|-----------------|----------------------|
+| `VoyagerProblem` | `n_frequencies`, `power_penalty_fn`, `bounds_overrides` | Direct constructor call |
+| `VoyagerTuningProblem` | `n_frequencies`, `power_penalty_fn`, `bounds_overrides` | Direct constructor call |
+| `ConstrainedVoyagerProblem` | `n_frequencies`, `power_penalty_fn`, `bounds_overrides` | Direct constructor call |
+| `UIFOProblem` | `size`, `n_frequencies`, `topology` (string), `power_penalty_fn`, `bounds_overrides` | Rebuilt from explicit `topology` string (deterministic, RNG-independent) |
+
+### Penalty function encoding
+
+Callables like `power_penalty_fn` are encoded **by name** via a registry of presets (`squashed_relu_penalty`, `relu_penalty`, `zero_penalty`). This keeps the spec JSON-safe. Custom penalty functions that are not registered presets will raise on `to_spec()` — register them or use the built-in presets.
+
+### Reconstructing from a checkpoint
+
+Reconstruction is a two-step process that crosses the storage/problem layer boundary:
+
+```python
+from dfbench.core.storage import CheckpointManager
+from dfbench.core.problem import ProblemSpec, build_problem_from_spec
+
+state = manager.load(path)
+spec_dict = CheckpointManager.extract_problem_spec(state)  # -> dict | None
+if spec_dict is not None:
+    ps = ProblemSpec.from_dict(spec_dict)        # typed container (accepts legacy flat too)
+    problem = build_problem_from_spec(ps)        # or pass spec_dict directly
+```
+
+`CheckpointManager.extract_problem_spec` returns `None` if the run did not record a problem spec (e.g. the problem did not implement `to_spec`). The relevant problem module must be imported so its class is registered.
+
+### Implementing `to_spec` for a new problem
+
+If you add a new `ContinuousProblem` subclass:
+
+1. Decorate it with `@register_problem` (imported from `dfbench.core.problem` or `dfbench.problems.base_problem`).
+2. Implement `to_spec()` returning a dict with `"type"` (the class name) plus every constructor argument needed for `build_problem_from_spec` to produce an equivalent instance.
+3. Encode any callables by name against a registry (see the penalty-function pattern in `base_problem.py`).
+
+You do not need to override `to_problem_spec()`; the default implementation wraps `to_spec()` into the typed container automatically.
+
+See [Storage & Checkpointing](Storage-and-Checkpointing) for how the spec is embedded in checkpoints.
 
 ---

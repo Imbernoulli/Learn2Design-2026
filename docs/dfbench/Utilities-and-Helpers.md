@@ -15,13 +15,13 @@ from dfbench import t2j, j2t
 | `t2j(tensor)` | `torch.Tensor → jax.Array` | Detach → CPU → NumPy → JAX |
 | `j2t(arr)` | `jax.Array → torch.Tensor` | JAX → NumPy (writable copy) → PyTorch |
 
-**Why these exist:**  
+**Why these exist:**
 EvoX and BoTorch operate on PyTorch tensors; Differometor and the `Objective` use JAX arrays. Every algorithm that wraps a PyTorch library needs to convert back and forth. The conversion goes through NumPy because JAX's `dlpack` interop with PyTorch is unreliable for zero-copy transfers on some platforms.
 
-**Why `j2t` makes a writable copy:**  
+**Why `j2t` makes a writable copy:**
 `jax.numpy.array` values are immutable. `torch.from_numpy()` on a read-only array emits a warning. Creating a NumPy copy via `np.array(arr)` avoids this.
 
-**Overhead:**  
+**Overhead:**
 Negligible for the array sizes in this project (tens to hundreds of floats). A population of 100 × 25-parameter vectors copies ~20 KB — sub-microsecond.
 
 ---
@@ -39,9 +39,9 @@ inverse_sigmoid_bounding(
 ) -> Float[Array, "N"]
 ```
 
-Maps parameters from bounded space $[\text{lb}, \text{ub}]$ back to the unbounded space $(-\infty, +\infty)$ that `sigmoid_objective_function` expects.
+Maps parameters from bounded space $[\text{lb}, \text{ub}]$ back to the unbounded space $(-\infty, +\infty)$ used by `Objective` in unbounded mode.
 
-The forward transform (applied inside the problem) is:
+The default forward transform is:
 
 $$x_{\text{bounded}} = \text{lb} + (\text{ub} - \text{lb}) \cdot \sigma(x_{\text{unbounded}})$$
 
@@ -51,7 +51,7 @@ $$x_{\text{unbounded}} = \log\!\left(\frac{\hat{x}}{1 - \hat{x}}\right) \quad\te
 
 Values are clipped to $[10^{-7},\; 1 - 10^{-7}]$ before the logit to avoid $\pm\infty$.
 
-**When you use this:**  
+**When you use this:**
 When you have a bounded parameter vector and want to convert it to unbounded space (e.g., for initializing an algorithm that works in unconstrained space).
 
 ---
@@ -88,7 +88,7 @@ args = parser.parse_args()
 # python run.py --pop-size 200 --learning-rate 0.001 --use-cuda
 ```
 
-**Why this exists:**  
+**Why this exists:**
 Batch scripts on HPC clusters pass hyperparameters as CLI arguments. This utility avoids writing boilerplate argparse code for each script.
 
 ---
@@ -114,7 +114,7 @@ if "MPLCONFIGDIR" not in os.environ:
 
 ## Public API Surface
 
-The top-level `dfbench` package re-exports the primary classes:
+The top-level `dfbench` package re-exports the submitter-facing symbols, the ones an optimization author needs to write and test an algorithm:
 
 ```python
 from dfbench import (
@@ -123,8 +123,34 @@ from dfbench import (
     OptimizationAlgorithm,       # algorithm ABC
     AlgorithmType,               # enum
     t2j, j2t,                    # tensor conversion
-    inverse_sigmoid_bounding,    # bounded ↔ unbounded
     create_parser,               # CLI helper
+)
+```
+
+Organizer-only symbols (storage, checkpointing, problem reconstruction) are not re-exported at the top level. Import them from their home modules:
+
+```python
+# Problem reconstruction (typed ProblemSpec container + registry)
+from dfbench.core.problem import (
+    ProblemSpec,                 # typed container: type, version, params
+    build_problem_from_spec,     # rebuild a problem from a ProblemSpec or dict
+    register_problem,            # decorator: register a problem class for reconstruction
+    validate_spec_round_trip,    # rebuild + assert bounds/n_params match
+)
+
+# Modular storage (see Storage & Checkpointing)
+from dfbench.core.storage import (
+    CheckpointManager,           # facade orchestrating save/load
+    CheckpointSerializer,        # serializer protocol
+    NpzCheckpointSerializer,     # compressed-NPZ serializer (default)
+    JsonCheckpointSerializer,    # pickle-free JSON serializer
+    LocalFilesystemBackend,      # atomic local-FS storage backend (default)
+    StorageBackend,              # storage backend protocol
+    RunPathResolver,             # structured path construction
+    RunDataExporter,             # human-readable JSON + PNG view
+    RunState,                    # shared run data contract
+    RunMetadata,                 # run identity + problem spec record
+    validate_run_state,          # RunState invariant contract (scoring gate)
 )
 ```
 
@@ -135,3 +161,5 @@ from dfbench.algorithms import AdamGD, EvoxPSO, BotorchBO, ...
 from dfbench.problems import VoyagerProblem, VoyagerTuningProblem, ConstrainedVoyagerProblem, UIFOProblem
 from dfbench.benchmark import Benchmark, AlgorithmConfig, BenchmarkResult
 ```
+
+See [Storage & Checkpointing](Storage-and-Checkpointing) for the full storage architecture and the individual component APIs, and [Problems](Problems) for the `ProblemSpec` container and the reconstructive contract.

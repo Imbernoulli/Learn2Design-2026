@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "dfbench",
+    "dfbench>=0.2.0",
 ]
 
 
@@ -31,11 +31,11 @@ namespaces = false
 [project.optional-dependencies]
 
 cuda12 = [
-    "dfbench[cuda12]",
+    "dfbench[cuda12]>=0.2.0",
 ]
 
 cuda13 = [
-    "dfbench[cuda13]",
+    "dfbench[cuda13]>=0.2.0",
 ]
 
 [project.urls]
