@@ -1,2 +1,7 @@
 from learn2design.example_algorithms.adam_gd import AdamGD
 from learn2design.example_algorithms.random_search import RandomSearch
+from learn2design.example_algorithms.na_adam_gd import NAAdamGD
+from learn2design.example_algorithms.sa_gd import SAGD
+from learn2design.example_algorithms.lbfgs_gd import LBFGSGD
+from learn2design.example_algorithms.jax_one_plus_one_es import JAXOnePlusOneES
+from learn2design.example_algorithms.jax_mu_lambda_es import JAXMuLambdaES
