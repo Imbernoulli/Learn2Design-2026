@@ -276,15 +276,17 @@ gradient-based, evolutionary, surrogate-based, and generative.
 
 ## Submitting
 
-Information about how to submit will be provided once the competition officially starts.
+Information about how to submit will be provided mid of July 2026.
 
 ---
+
+
 
 ## Timeline
 
 | Date | Event |
 |---|---|
-| Expected: 01.07.2026 | Start of competition |
+| Expected: 07.07.2026 | Start of competition |
 | 1st week of August, September, October | Release of public leaderboard |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
@@ -309,10 +311,10 @@ opens.
 
 ```bibtex
 @misc{learn2design2026,
-  title  = {Learn2Design 2026: Black-box Optimization for Gravitational-Wave Detector Design},
-  author = {Learn2Design collaboration},
+  title  = {Learn2Design 2026: A Physics Experiment Design Competition for Gravitational-Wave Detectors},
+  author = {Klimesch, Jonathan and Sefa, Laurin and Basu, Soham and Kanagasabapathi, Priya and Arlt, S{\"o}ren and Gu, Xuemei and Christie, Thomas and Doumont, Colin and Freise, Andreas and Adhikari, Rana and Hennig, Philipp and Krenn, Mario},
   year   = {2026},
-  url    = {https://github.com/artificial-scientist-lab/Learn2Design-2026},
+  url    = {https://github.com/artificial-scientist-lab/Learn2Design-2026}
 }
 ```
 
