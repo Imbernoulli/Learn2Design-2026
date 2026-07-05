@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **July ~7**.
+> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **8.July 2026**.
 
 # NeurIPS 2026 Challenge: Learn2Design-2026
 
@@ -314,7 +314,7 @@ gradient-based, evolutionary, surrogate-based, and generative.
 
 ## Submitting
 
-Information about how to submit will be provided mid of July 2026.
+Information about how to submit will be provided roughly on the 20. 2026.
 
 ---
 
@@ -324,7 +324,8 @@ Information about how to submit will be provided mid of July 2026.
 
 | Date | Event |
 |---|---|
-| Expected: 07.07.2026 | Start of competition |
+| Expected: 08.07.2026 | Start of competition |
+| Expected: 20.07.2026 | Submission Platform opens |
 | 1st week of August, September, October | Release of public leaderboard |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
