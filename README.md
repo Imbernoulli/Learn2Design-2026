@@ -1,34 +1,45 @@
 > [!IMPORTANT]
 > **BETA RELEASE:** This repository is currently in beta. The official competition will start on **July ~7**.
 
-# Learn2Design-2026
+# NeurIPS 2026 Challenge: Learn2Design-2026
 
-A black-box optimization competition for gravitational-wave detector design.
+## A physics experiment design competition for gravitational-wave detectors
 
-You are given a fixed quasi-universal interferometer ([UIFO](https://github.com/artificial-scientist-lab/Differometor#differometor-for-the-computational-design-of-gravitational-wave-detectors)) with a fixed topology (meaning choice of optical components in the experiment) and
-continuous parameters (laser powers, mirror reflectivities, grid distances, ...).
-Your job is to find the parameter vector that maximises detector sensitivity,
-within a fixed compute budget.
+<p align="center">
+Jonathan Klimesch<sup>1</sup>, Laurin Sefa<sup>1</sup>, Soham Basu<sup>1</sup>, Priya Kanagasabapathi<sup>1</sup>,<br>
+Sören Arlt<sup>1</sup>, Xuemei Gu<sup>2</sup>, Thomas Christie<sup>1</sup>, Colin Doumont<sup>1</sup>,<br>
+Andreas Freise<sup>3</sup>, Rana Adhikari<sup>4</sup>, Philipp Hennig<sup>1</sup>, Mario Krenn<sup>1</sup>
+</p>
 
-The objective function is pure and jax-based. It supports gradients and Hessians via auto-diff.
+<p align="center">
+<sup>1</sup>Department for Computer Science, Faculty of Science, University of Tübingen, Tübingen, Germany<br>
+<sup>2</sup>Institut für Festkörpertheorie und Optik, Friedrich-Schiller-Universität Jena, Jena, Germany<br>
+<sup>3</sup>Nikhef, National Institute for Subatomic Physics, Amsterdam, The Netherlands<br>
+<sup>4</sup>Institute for Quantum Information and Matter, California Institute of Technology, Pasadena, CA, USA
+</p>
 
-You submit algorithms. The best algorithm over 10 problems wins.
+**Learn2Design-2026** is a NeurIPS 2026 challenge on the automated design of highly sensitive [gravitational-wave detectors](https://en.wikipedia.org/wiki/LIGO) under realistic experimental constraints.
 
-To develop your algorithm, you have access to an auto-differentiating Simulator and 30,000 high-quality examples from a 360,000 GPU-hour run through EuroHPC.
+Participants are given a fixed [experimental setup of a gravitational-wave detector](https://github.com/artificial-scientist-lab/Differometor#differometor-for-the-computational-design-of-gravitational-wave-detectors), specified by a fixed optical topology, meaning a fixed choice and arrangement of optical components. Within this topology, the task is to optimize roughly **200 continuous parameters**, such as laser powers, mirror reflectivities, grid distances, and related experimental degrees of freedom.
 
-> **Status:** Pre-launch. The starting kit is being finalised. Further baselines
-> and their results will be added until the start of the competition. `dfbench`
-> (v0.2.0) is [public on PyPI](https://pypi.org/project/dfbench/). Its full
-> documentation lives in the
-> [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki),
-> and a bundled copy is in [`docs/dfbench/`](docs/dfbench/).
+The goal is to develop an algorithm that **maximizes detector sensitivity** while satisfying physical and experimental constraints, all within a fixed compute budget. Participants submit the algorithm itself, not only a final design. The submitted algorithms will be run by the organizers on standardized local hardware and ranked by their average performance on hidden detector topologies.
+
+The challenge provides the differentiable, JAX-based simulator **[Differometor](https://github.com/artificial-scientist-lab/Differometor)**. Its objective function is pure, JAX-compatible, and supports gradients and Hessians through automatic differentiation, enabling gradient-based, hybrid, and learning-based optimization strategies.
+
+To support algorithm development, we also provide approximately **30,000 high-quality detector designs** generated through a **360,000 GPU-hour EuroHPC exploration campaign**. These examples can be used for supervised learning, initialization, representation learning, generative modeling, benchmarking, or other exploration and optimization approaches.
+
+Algorithms will be ranked by their hidden-evaluation performance, with **EUR 25,000** in prize money.
+
+Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific question:
+**Can AI systems discover scientific instruments that go beyond human intuition while remaining physically meaningful and experimentally constrained?**
+
+> **Status:** Pre-launch. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
+> `dfbench` v0.2.0 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
 
 ---
 
 ## How it works
 
-- Each month we publish 10 new public topologies. Submissions are scored on the 
-  average best loss across all 10 of them.
 - Your score will get published to that month's leaderboard.
 - Every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
   an AMD EPYC 7302 CPU.
