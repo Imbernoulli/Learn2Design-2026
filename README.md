@@ -45,7 +45,7 @@ Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific
 - **Two special prizes:  EUR 3,000** (judged by a committee for the most surprising or creative
 solution, and simplest strong-performing solution).
 
-prize eligibility requires the submission of an, initally confidential, *short technical report of 2-4 pages* (see below).
+Prize eligibility requires the submission of an, initally confidential, *short technical report of 2-4 pages* (see below).
 
 The prize money is sponsored by [SPRIND (Federal Agency for Disruptive Innovation / Bundesagentur für Sprunginnovationen)](https://www.sprind.org/).
 
