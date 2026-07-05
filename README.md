@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **July ~7**.
+
 # Learn2Design-2026
 
 A black-box optimization competition for gravitational-wave detector design.
