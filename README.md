@@ -38,17 +38,55 @@ Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific
 
 ---
 
+## Prize money
+- **1st prize: EUR 10,000**
+- **2nd prize: EUR 6,000**
+- **3rd prize: EUR 3,000**
+- **Two special prizes:  EUR 3,000** (judged by a committee for the most surprising or creative
+solution, and simplest strong-performing solution).
+
+prize eligibility requires the submission of an, initally confidential, *short technical report of 2-4 pages* (see below).
+
+The prize money is sponsored by [SPRIND (Federal Agency for Disruptive Innovation / Bundesagentur für Sprunginnovationen)](https://www.sprind.org/).
+
+---
+
+## Technical reports and post-competition publication
+
+- After the final hidden evaluation, we will invite all teams whose final submissions
+outperform the organizer-provided baseline threshold to **submit a short technical
+report of 2-4 pages** describing their method. Timely submission of this report is
+required for organizational reasons and is a prerequisite for prize eligibility,
+special-prize consideration, workshop-presentation selection, and participation
+in the joint post-competition publication.
+
+- The **technical reports** help the organizers verify and understand the submitted methods,
+prepare the workshop program, document the scientific and algorithmic lessons of
+the competition, report to the sponsor, and prepare a joint post-competition
+analysis.
+
+- Technical reports will **initially be submitted confidentially** to the organizers.
+We may request these reports before teams publicly release their own method
+descriptions, so that the organizers can coordinate the competition analysis and
+the joint publication. Reports will not be made public by the organizers without
+author approval.
+
+- Participants **retain copyright** in their own reports and methods.
+
+- Teams with eligible final submissions will be **invited to contribute to a joint
+competition-review paper** as named authors. The short technical report will serve
+as the starting point for describing each team's method in this joint analysis.
+
 ## How it works
 
-- Your score will get published to that month's leaderboard.
-- Every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
+- You submit your optimization algorithm.
+- We run it on 10 held-out (hidden) topologies, every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
   an AMD EPYC 7302 CPU.
-- The final leaderboard is decided on 10 held-out private topologies that
-  are never published.
-- Your final score will be the mean of the best loss reached on the 10 private 
-  problems. Lower is better.
+- The best sensitivity (conditioned on satifying all constraints) will be recorded for each of the 10 runs.
+- The average best sensitivity over the 10 runs will be used to score your submission. Lower is better.
+- Your score will get published to that monthly leaderboard and will be used for your final evaluation.
 
-A "topology" fixes the choice of optical components for a UIFO; you only optimize 
+A "topology" fixes the choice of optical components for an experimental ansatz; you only optimize 
 the continuous parameters attached to it. These could be laser power, mirror 
 reflectivity, grid distance, etc.
 
