@@ -20,7 +20,8 @@ Andreas Freise<sup>3</sup>, Rana Adhikari<sup>4</sup>, Philipp Hennig<sup>1</sup
 
 **Learn2Design-2026** is a NeurIPS 2026 challenge on the automated design of highly sensitive [gravitational-wave detectors](https://en.wikipedia.org/wiki/LIGO) under realistic experimental constraints.
 
-Participants are given a fixed [experimental setup of a gravitational-wave detector](https://github.com/artificial-scientist-lab/Differometor#differometor-for-the-computational-design-of-gravitational-wave-detectors), specified by a fixed optical topology, meaning a fixed choice and arrangement of optical components. Within this topology, the task is to optimize roughly **200 continuous parameters**, such as laser powers, mirror reflectivities, grid distances, and related experimental degrees of freedom.
+Participants are given [a search space of gravitational-wave detectors](#quasi-universal-interferometer-uifo).
+Within this search space, the task is to optimize roughly **200 continuous parameters**, such as laser powers, mirror reflectivities, grid distances, and related experimental degrees of freedom.
 
 The goal is to develop an algorithm that **maximizes detector sensitivity** while satisfying physical and experimental constraints, all within a fixed compute budget. Participants submit the algorithm itself, not only a final design. The submitted algorithms will be run by the organizers on standardized local hardware and ranked by their average performance on hidden detector topologies.
 
@@ -90,6 +91,18 @@ A "topology" fixes the choice of optical components for an experimental ansatz; 
 the continuous parameters attached to it. These could be laser power, mirror 
 reflectivity, grid distance, etc.
 
+## Quasi-Universal Interferometer (UIFO)
+
+The given search space of gravitational-wave detectors is visualized below. It consists of a grid structure which can hold different combinations of five building blocks. The two beam splitter and isolator blocks can fill the grid centers (in any rotation). The three laser, squeezer, and detector blocks can fill the boundary cells whereas the detector block can only be placed once.
+
+Each component has parameters that can be optimized within certain ranges.
+
+The goal is to find algorithms that work well on any UIFO sample from this search space, two examples are also visualized in the figure below. Each evaluation will run on 10 hidden topologies (specific combinations of the five building blocks like the two examples shown below).
+
+<p align="center">
+  <img src="media/UIFO.png" alt="Quasi-Universal Interferometer (UIFO)" width="720">
+</p>
+
 ---
 
 ## Install
@@ -131,12 +144,13 @@ groups interactively.
 
 Start with the dataset-specific guide in [`dataset/README.md`](dataset/README.md).
 It documents the HDF5 layout, efficient lazy slicing of parameter and power
-pools, and includes runnable examples for loading an entry and evaluating it
-with `UIFOProblem`.
+pools, and includes runnable examples for loading, evaluating, and visualizing
+an entry with `UIFOProblem` and Differometor.
 
 ```bash
 python dataset/examples/load_entry.py --index 0
 python dataset/examples/evaluate_entry.py --index 0
+python dataset/examples/visualize_entry.py --index 0
 ```
 
 The dataset was distilled and curated from the much larger [GraviTune Dataset](https://github.com/artificial-scientist-lab/GraviTune-Dataset).
@@ -255,7 +269,7 @@ dataset/
 ├── dataset.h5
 ├── dataset_dashboard.html
 ├── README.md
-└── examples/            # Loading and evaluation examples
+└── examples/            # Loading, evaluation, and visualization examples
 
 baselines/
 ├── evolutionary/

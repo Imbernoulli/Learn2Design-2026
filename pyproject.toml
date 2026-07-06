@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "dfbench>=0.2.0",
+    "h5py>=3.8",
 ]
 
 
