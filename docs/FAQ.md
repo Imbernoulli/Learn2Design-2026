@@ -33,7 +33,7 @@ A "topology" fixes the discrete choice and placement of optical components (like
 
 ### How can I directly define the topology of a UIFO (not through seed)?
 There are two ways besides the `topology_seed` to set the UIFO topology when initializing a `UIFOProblem`:
-1. **`topology` string:** A compact encoding using single-character codes (e.g., `topology="AECGCCHEG-SLLSSHLLLLS"`). The first 9 characters encode the center components. The other 12 encode the boundary components. The mapping from characters to components is defined in the `UIFOProblem` class. See [Objective-API-Reference.md](docs/dfbench/Objective-API-Reference.md) for the exact encoding scheme.
+1. **`topology` string:** A compact encoding using single-character codes (e.g., `topology="AECGCCHEG-SLLSSHLLLLS"`). The first 9 characters encode the center components. The other 12 encode the boundary components. See [Explanation of "Topology"](dfbench_overview.md#explanation-of-topology) for the exact encoding scheme.
 2. **`centers` + `boundaries` dictionaries:** Explicit component placement using coordinate dictionaries that match Differometor's native format (e.g., `centers={"11": ("beamsplitter", "left")}, boundaries={"01": "squeezer"}`). Refer to the [Differometor documentation](https://github.com/artificial-scientist-lab/Differometor/blob/6aa8592e4e7c9c48ff925e423aae5649185f4e88/differometor/setups.py#L752) for the exact format.
 
 ### How long does the objective function evaluation take?
@@ -68,7 +68,7 @@ It depends entirely on your chosen algorithmic approach:
 * **Bounded Space (`unbounded=False`):** Best for Evolutionary and Surrogate-based algorithms (like Random Search, PSO, CMA-ES, or BO) because populations and acquisitions naturally respect physical box constraints.
 * **Unbounded Space (`unbounded=True`):** Best for Gradient-based methods (like Adam or L-BFGS). Optimization in clipped-bounded space can produce zero gradients at boundaries. Setting `unbounded=True` applies a sigmoid transform so gradients remain smooth and non-zero everywhere.
 
-Note: The `Objective` handles the scaling and transformations (also of gradients) automatically. You can also implement your own transformation via `set_space_mode(unbounded, unit_mapping=None, inverse_unit_mapping=None)`. See the [Objective API Reference](docs/dfbench/Objective-API-Reference.md) for details.
+Note: The `Objective` handles the scaling and transformations (also of gradients) automatically. You can also implement your own transformation via `set_space_mode(unbounded, unit_mapping=None, inverse_unit_mapping=None)`. See the [Objective API Reference](dfbench/Objective-API-Reference.md) for details.
 
 ### I want to use PyTorch. Is that supported?
 Yes. Differometor and `Objective` are built in JAX, but many optimization libraries (like EvoX or BoTorch) use PyTorch. We provide lightweight conversion utilities (`t2j` to convert PyTorch to JAX, and `j2t` to convert JAX to PyTorch). The conversion routes through NumPy and has negligible overhead.

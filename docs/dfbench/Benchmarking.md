@@ -89,7 +89,7 @@ Benchmark(
 | `n_time_samples` | 100 | Points to sample in `[max_time/n, max_time]` |
 | `random_baseline_loss` | `None` | Expected loss of random guess. If set, AUC metrics are normalized |
 | `random_seed` | `None` | If set, generates deterministic per-run seeds from this master seed |
-| `storage_backend` | `None` | Where benchmark run data (NPZ/JSON/CSV) is physically stored. Defaults to a `LocalFilesystemBackend` (cwd-relative). Swapping this redirects all benchmark artifacts (e.g. to a scratch disk or S3-backed prefix) without code changes. See [Storage & Checkpointing](Storage-and-Checkpointing). |
+| `storage_backend` | `None` | Where benchmark run data (NPZ/JSON/CSV) is physically stored. Defaults to a `LocalFilesystemBackend` (cwd-relative). Swapping this redirects all benchmark artifacts (e.g. to a scratch disk or S3-backed prefix) without code changes. See [Storage & Checkpointing](Storage-and-Checkpointing.md). |
 
 ### `Benchmark.run()`
 
@@ -213,7 +213,7 @@ data/benchmark_run_data/
     └── BO.npz
 ```
 
-**`metadata.json`** stores the benchmark configuration (problem name, success threshold, seeds, algorithm list). Each **`.npz`** file contains all runs for one algorithm in NumPy's compressed format. All files are written **atomically** through the configured `StorageBackend` (temp-in-same-dir + `os.replace`), so an interrupted benchmark never leaves half-written files. See [Storage & Checkpointing](Storage-and-Checkpointing).
+**`metadata.json`** stores the benchmark configuration (problem name, success threshold, seeds, algorithm list). Each **`.npz`** file contains all runs for one algorithm in NumPy's compressed format. All files are written **atomically** through the configured `StorageBackend` (temp-in-same-dir + `os.replace`), so an interrupted benchmark never leaves half-written files. See [Storage & Checkpointing](Storage-and-Checkpointing.md).
 
 ### Reloading
 

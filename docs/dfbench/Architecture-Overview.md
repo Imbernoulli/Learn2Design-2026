@@ -54,12 +54,12 @@ A problem defines *what* is being optimised. Every problem subclasses `Continuou
 | `objective_function` | Loss in **bounded** parameter space (used by e.g. evolutionary / surrogate algorithms) |
 | `bounds` | `(2, n_params)` lower / upper limits |
 | `optimization_pairs` | `[(component, property), …]` mapping each parameter index to a Differometor component |
-| `to_spec() → dict` | Reconstructive spec: a small, JSON-serialisable dict sufficient to rebuild an equivalent problem instance (see [Problems](Problems)) |
+| `to_spec() → dict` | Reconstructive spec: a small, JSON-serialisable dict sufficient to rebuild an equivalent problem instance (see [Problems](Problems.md)) |
 | `to_problem_spec() → ProblemSpec` | Typed container wrapping `to_spec()`; carries `type`, `version`, `params`. This is what checkpoints embed. |
 
 **Rationale (one bounded problem function):** Some optimization methods benefit from unconstrained $(-\infty, +\infty)$ space where gradients flow smoothly without hitting box-constraint boundaries. `Objective` provides that mapping layer so problem implementations only need to define the bounded loss.
 
-**Rationale (reconstructive spec):** A checkpoint is only useful for resume or provenance if the originating problem can be rebuilt. `to_spec()` encodes the problem's constructor arguments (and, for UIFO, its topology string); `to_problem_spec()` wraps that into a typed `ProblemSpec` container (`type`, `version`, `params`) so a saved run is fully self-describing and consumers get a schema-validated identity. See [Storage & Checkpointing](Storage-and-Checkpointing).
+**Rationale (reconstructive spec):** A checkpoint is only useful for resume or provenance if the originating problem can be rebuilt. `to_spec()` encodes the problem's constructor arguments (and, for UIFO, its topology string); `to_problem_spec()` wraps that into a typed `ProblemSpec` container (`type`, `version`, `params`) so a saved run is fully self-describing and consumers get a schema-validated identity. See [Storage & Checkpointing](Storage-and-Checkpointing.md).
 
 ### 2. Objective Layer (`core/objective.py`)
 
@@ -70,7 +70,7 @@ A problem defines *what* is being optimised. Every problem subclasses `Continuou
 - Records every evaluation with aligned loss / gradient / Hessian / params / timestamp histories
 - Enforces wall-clock time and evaluation-count budgets
 - Provides deterministic random sampling via a splittable JAX PRNG
-- Delegates all file I/O to the modular `dfbench.core.storage` layer (see [Storage & Checkpointing](Storage-and-Checkpointing))
+- Delegates all file I/O to the modular `dfbench.core.storage` layer (see [Storage & Checkpointing](Storage-and-Checkpointing.md))
 
 **Rationale: Why a wrapper instead of bare functions?** Without it, every algorithm would need to independently implement timing, budget checks, history logging, checkpointing, and bounded↔unbounded transforms. This both duplicates code and makes cross-algorithm comparison unreliable because each implementation might measure time or count evaluations slightly differently.
 
@@ -99,7 +99,7 @@ A modular package that decouples *what* is saved from *how* and *where*:
 - `RunDataExporter`: human-readable JSON + PNG view derived from `RunState`.
 - `CheckpointManager`: the single facade `Objective` holds; wires the above together.
 
-See [Storage & Checkpointing](Storage-and-Checkpointing) for the full reference.
+See [Storage & Checkpointing](Storage-and-Checkpointing.md) for the full reference.
 
 ---
 

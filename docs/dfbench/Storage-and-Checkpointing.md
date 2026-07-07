@@ -104,7 +104,7 @@ Every checkpoint carries a `format_version` scalar (`RunState`/`RunMetadata` wri
 
 ### Embedded problem spec
 
-If the wrapped problem implements the reconstructive `to_spec()` contract (see [Problems](Problems)), `Objective._build_metadata` records a typed `ProblemSpec` container in `metadata.extra["problem_spec"]`. The checkpoint is then self-describing: the problem identity is recoverable from the file alone, not just from the caller's memory.
+If the wrapped problem implements the reconstructive `to_spec()` contract (see [Problems](Problems.md)), `Objective._build_metadata` records a typed `ProblemSpec` container in `metadata.extra["problem_spec"]`. The checkpoint is then self-describing: the problem identity is recoverable from the file alone, not just from the caller's memory.
 
 The embedded value is the JSON-safe dict produced by `ProblemSpec.to_dict()`:
 
