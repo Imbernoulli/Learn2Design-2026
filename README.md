@@ -338,7 +338,8 @@ In the plots below, we provide comparisons between baselines from different clas
 
 The table below summarizes the example baselines included in [`learn2design/algorithms`](learn2design/example_algorithms).
 
-> [!TIP] For a host of other baselines, take a look at [dfbench/algorithms](https://github.com/artificial-scientist-lab/Differometor-Benchmark/tree/main/src/dfbench/algorithms)
+> [!TIP]
+> For a host of other baselines, take a look at [dfbench/algorithms](https://github.com/artificial-scientist-lab/Differometor-Benchmark/tree/main/src/dfbench/algorithms)
 
 Rows are ordered by displayed mean loss; ties in the rounded values are broken
 by displayed SEM and then alphabetically.
