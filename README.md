@@ -42,9 +42,9 @@ Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific
 > **Status:** Pre-launch. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
 > `dfbench` v0.2.0 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
 
----
 
 ## Prize money
+
 - **1st prize: EUR 10,000**
 - **2nd prize: EUR 6,000**
 - **3rd prize: EUR 3,000**
@@ -55,7 +55,6 @@ Prize eligibility requires the submission of an, initally confidential, *short t
 
 The prize money is sponsored by [SPRIND (Federal Agency for Disruptive Innovation / Bundesagentur für Sprunginnovationen)](https://www.sprind.org/).
 
----
 
 ## Technical reports and post-competition publication
 
@@ -83,6 +82,7 @@ author approval.
 competition-review paper** as named authors. The short technical report will serve
 as the starting point for describing each team's method in this joint analysis.
 
+
 ## How it works
 
 - You submit your optimization algorithm.
@@ -98,7 +98,6 @@ reflectivity, grid distance, etc.
 
 Your algorithm is allowed to evaluate the objective in batches via `jax.vmap` (the `obj.vmap_*` methods). The whole batch runs in a single vmapped forward pass, which saves significant time per element opposed to looping single evals. This is encouraged for population-based methods (PSO, CMA-ES, evolutionary strategies) and any algorithm that naturally evaluates multiple candidates per step.
 
----
 
 ## Minimal working example
 
@@ -151,7 +150,6 @@ optimizer = MyAlgorithm()
 optimizer.optimize(objective)
 ```
 
----
 
 ## Install
 
@@ -183,7 +181,6 @@ Smoke-test one UIFO evaluation (may take a few minutes to JIT-compile) with [smo
 python learn2design/scripts/smoke_test.py
 ```
 
----
 
 ## Quasi-Universal Interferometer (UIFO)
 
@@ -197,7 +194,6 @@ The goal is to find algorithms that work well on any UIFO sample from this searc
   <img src="media/UIFO.png" alt="Quasi-Universal Interferometer (UIFO)" width="720">
 </p>
 
----
 
 ## Dataset
 
@@ -222,60 +218,6 @@ python dataset/examples/visualize_entry.py --index 0
 
 The dataset was distilled and curated from the much larger [GraviTune Dataset](https://github.com/artificial-scientist-lab/GraviTune-Dataset).
 
----
-
-## Minimal working example
-
-A submission is one class subclassing `OptimizationAlgorithm`:
-
-```python
-from dfbench import Objective
-from dfbench.core.algorithm import OptimizationAlgorithm
-from jaxtyping import Array, Float
-
-
-class MyAlgorithm(OptimizationAlgorithm):
-
-    algorithm_str = "my_algo"
-
-    def optimize(
-        self,
-        objective: Objective,
-        init_params: Float[Array, "..."],
-        random_seed: int | None = None,
-        **kwargs,
-    ) -> None:
-        # 1. Warm up JIT (compilation is free, not counted against the budget)
-        objective.warmup_value()
-
-        # 2. Start the clock
-        objective.start_logging()
-
-        # 3. Optimization loop
-        params = init_params
-        while not objective.budget_exceeded:
-            # ... your update logic here, producing `params` ...
-            loss = objective.value(params)  # automatically logged
-```
-
-That is the entire contract. The `Objective` handles seeding, history,
-checkpointing, and budget enforcement. You write the loop.
-
-To see an example for execution, look at a script like [uifo_random_search.py](learn2design/scripts/uifo_random_search.py) or [uifo_adam_gd.py](learn2design/scripts/uifo_adam_gd.py). The simplest form of execution looks like this:
-
-```python
-from dfbench.problems import UIFOProblem
-from dfbench import Objective
-from learn2design.example_algorithms import MyAlgorithm
-
-problem = UIFOProblem(topology_seed=42)  # Random topology with seed 42
-objective = Objective(problem, max_time=10*60)  # 10 Minutes of optimization
-
-optimizer = MyAlgorithm()
-optimizer.optimize(objective)
-```
-
----
 
 ## Repository layout
 
@@ -328,7 +270,6 @@ baselines/
 
 </details>
 
----
 
 ## Baselines
 
@@ -365,13 +306,10 @@ A loss of zero means that the optimizer has discovered the best known human desi
 *General types follow `dfbench`'s coarse `AlgorithmType` system:
 gradient-based, evolutionary, surrogate-based, global_search, derivative_free and generative.
 
----
 
 ## Submitting
 
 Information about how to submit will be provided roughly on July 20th 2026.
-
----
 
 
 ## Timeline
@@ -384,7 +322,6 @@ Information about how to submit will be provided roughly on July 20th 2026.
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
 
----
 
 ## Resources
 
@@ -405,8 +342,6 @@ opens.
 > * [docs/dfbench_overview](docs/dfbench_overview.md) provides a brief overview of the technical details of the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package.
 > * [docs/dfbench](docs/dfbench/) includes a comprehensive documentation of the __dfbench__ package.  
 
-
----
 
 ## Citing
 
