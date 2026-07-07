@@ -42,35 +42,15 @@ internet access. It contains:
 | `power_offset`, `power_length`, `power_rows`, `power_cols` | Slice and reshape metadata for `power_values`. |
 | `power_map_id` | Selects named port indices for rows in the reshaped power array. |
 | `size`, `complexity` | UIFO grid size and topology complexity. |
+| `source_file`, `run_id` | Original GraviTune source file and run group this setup was distilled from. |
 
-## Topology String Encoding
+## Topology Strings
 
 Each `topology_string` is the compact topology representation accepted by
-`UIFOProblem(size=..., topology=...)`. It has the form:
+`UIFOProblem(size=..., topology=...)`. For the string format and component-code
+mapping, see [Explanation of "Topology"](../docs/dfbench_overview.md#explanation-of-topology).
 
-```text
-<interior_chars>-<boundary_chars>
-```
-
-Both halves are row-major encodings of the UIFO grid. The interior characters
-describe the grid cells:
-
-| Code | Component |
-| --- | --- |
-| `A`, `B`, `C`, `D` | Beamsplitter oriented left, right, top, or bottom. |
-| `E`, `F`, `G`, `H` | Directional beamsplitter oriented left, right, top, or bottom. |
-
-The boundary characters describe the components attached around the grid:
-
-| Code | Component |
-| --- | --- |
-| `L` | Laser |
-| `S` | Squeezer |
-| `D` | Detector |
-| `H` | Balanced homodyne |
-
-For example, a 3x3 topology has 9 interior characters before the hyphen and 12
-boundary characters after it, such as `ABBGDGBEA-SLLLSDSLSLSL`.
+## Loading Variable-Length Data
 
 Large variable-length arrays are stored in flat pools. Slice only the row you need:
 

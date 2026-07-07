@@ -29,7 +29,7 @@ Additionally, there are two special prizes of EUR 3,000 each. These are judged b
 ### What is a topology?
 A "topology" fixes the discrete choice and placement of optical components (like lasers, squeezers, detectors, and beam splitters) for a Quasi-Universal Interferometer (UIFO). When optimizing a given topology, you only tune the continuous parameters attached to it, such as laser power, mirror reflectivity, and grid distances.
 
-<img src="media/uifo.png" alt="UIFO Topology Picture" width="520" />
+<img src="../media/UIFO.png" alt="UIFO Topology Picture" width="520" />
 
 ### How can I directly define the topology of a UIFO (not through seed)?
 There are two ways besides the `topology_seed` to set the UIFO topology when initializing a `UIFOProblem`:
