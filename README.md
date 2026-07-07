@@ -288,26 +288,26 @@ Category-level overview across the baseline families:
 
 | Rank & name | General type* | Detailed implementation | Average loss ± SEM | Link to implementation |
 |---|---|---|---|---|
-| 1. `AdamGD` | Gradient-based | Standard Adam optimizer utilizing gradient clipping for stability | 1.1 ± 0.3 | [AdamGD](docs/dfbench/Algorithms.md#L61) |
-| 2. `NAAdamGD` | Gradient-based | Adam optimizer enhanced with decaying Gaussian noise to escape local optima | 1.2 ± 0.4 | [NAAdamGD](docs/dfbench/Algorithms.md#L112) |
-| 3. `OptaxSGDM` | Gradient-based | Stochastic Gradient Descent (SGD) with momentum, implemented via Optax | 1.2 ± 0.4 | [OptaxSGDM](docs/dfbench/Algorithms.md#L1228) |
-| 4. `SLSQP` | Gradient-based | Sequential Least Squares Programming (SciPy), well-suited for constrained optimization | 1.8 ± 0.07 | [SciPy gradient family](docs/dfbench/Algorithms.md#L163) |
-| 5. `BFGS` | Gradient-based | BFGS quasi-Newton method (SciPy) for gradient-based optimization | 1.8 ± 0.2 | [SciPy gradient family](docs/dfbench/Algorithms.md#L163) |
-| 6. `OptaxLAMB` | Gradient-based | LAMB optimizer (Optax) designed to adapt learning rates layer-by-layer | 1.8 ± 0.3 | [OptaxLAMB](docs/dfbench/Algorithms.md#L1158) |
-| 7. `OptaxYogi` | Gradient-based | Yogi optimizer (Optax) featuring conservative variance updates for stable learning | 2.1 ± 0.4 | [OptaxYogi](docs/dfbench/Algorithms.md#L1357) |
-| 8. `TNC` | Gradient-based | Truncated Newton algorithm (SciPy) supporting bound constraints | 2.8 ± 0.1 | [SciPy gradient family](docs/dfbench/Algorithms.md#L163) |
-| 9. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](docs/dfbench/Algorithms.md#L146) |
-| 10. `OptaxOGD` | Gradient-based | Optimistic Gradient Descent (Optax), predicting future gradients to accelerate convergence | 3.0 ± 0.4 | [OptaxOGD / OptaxOAdam](docs/dfbench/Algorithms.md#L1379) |
-| 11. `OptaxSignum` | Gradient-based | Signum optimizer (Optax) utilizing the sign of gradients and momentum | 3.3 ± 0.2 | [OptaxSignum](docs/dfbench/Algorithms.md#L1390) |
-| 12. `EvoxPSO (FSPSO)` | Evolutionary | Feature Selection Particle Swarm Optimization (EvoX) to maintain population diversity | 3.6 ± 0.3 | [EvoxPSO variants](docs/dfbench/Algorithms.md#L226) |
-| 13. `OptaxRProp` | Gradient-based | Resilient Backpropagation (Optax), using only the sign of gradients for parameter updates | 3.8 ± 0.2 | [OptaxRProp](docs/dfbench/Algorithms.md#L1206) |
-| 14. `CMAESCMA` | Evolutionary | Full-covariance CMA-ES using the `cmaes.CMA` backend | 4.1 ± 0.1 | [CMAESCMA](docs/dfbench/Algorithms.md#L449) |
-| 15. `EvoxPSO (PSO)` | Evolutionary | Standard Particle Swarm Optimization (EvoX) simulating swarm behavior | 4.1 ± 0.2 | [EvoxPSO variants](docs/dfbench/Algorithms.md#L226) |
-| 16. `BotorchTuRBO` | Surrogate-based | Trust Region Bayesian Optimization (TuRBO) using BoTorch's Gaussian processes | 4.5 ± 0.1 | [BotorchTuRBO](docs/dfbench/Algorithms.md#L639) |
-| 17. `BotorchBO` | Surrogate-based | Bayesian Optimization (BoTorch) using Gaussian processes and qLogEI acquisition | 4.7 ± 0.2 | [BotorchBO](docs/dfbench/Algorithms.md#L619) |
-| 18. `RandomSearch` | — | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](docs/dfbench/Algorithms.md#L218) |
-| 19. `VAESampling top2%` | Generative | Variational Autoencoder sampling by latent-space search with Bayesian Optimization. Trained on top 2% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#L957) |
-| 20. `VAESampling top10%` | Generative | VAE trained on 10% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#L957) |
+| 1. `AdamGD` | Gradient-based | Standard Adam optimizer utilizing gradient clipping for stability | 1.1 ± 0.3 | [AdamGD](docs/dfbench/Algorithms.md#adamgd) |
+| 2. `NAAdamGD` | Gradient-based | Adam optimizer enhanced with decaying Gaussian noise to escape local optima | 1.2 ± 0.4 | [NAAdamGD](docs/dfbench/Algorithms.md#naadamgd-noisy-annealing-adam) |
+| 3. `OptaxSGDM` | Gradient-based | Stochastic Gradient Descent (SGD) with momentum, implemented via Optax | 1.2 ± 0.4 | [OptaxSGDM](docs/dfbench/Algorithms.md#optaxsgd--optaxsgdm--optaxnag) |
+| 4. `SLSQP` | Gradient-based | Sequential Least Squares Programming (SciPy), well-suited for constrained optimization | 1.8 ± 0.07 | [SciPy gradient family](docs/dfbench/Algorithms.md#scipy-gradient--trust--constrained-family) |
+| 5. `BFGS` | Gradient-based | BFGS quasi-Newton method (SciPy) for gradient-based optimization | 1.8 ± 0.2 | [SciPy gradient family](docs/dfbench/Algorithms.md#scipy-gradient--trust--constrained-family) |
+| 6. `OptaxLAMB` | Gradient-based | LAMB optimizer (Optax) designed to adapt learning rates layer-by-layer | 1.8 ± 0.3 | [OptaxLAMB](docs/dfbench/Algorithms.md#optaxlamb) |
+| 7. `OptaxYogi` | Gradient-based | Yogi optimizer (Optax) featuring conservative variance updates for stable learning | 2.1 ± 0.4 | [OptaxYogi](docs/dfbench/Algorithms.md#optaxyogi) |
+| 8. `TNC` | Gradient-based | Truncated Newton algorithm (SciPy) supporting bound constraints | 2.8 ± 0.1 | [SciPy gradient family](docs/dfbench/Algorithms.md#scipy-gradient--trust--constrained-family) |
+| 9. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](docs/dfbench/Algorithms.md#lbfgsgd) |
+| 10. `OptaxOGD` | Gradient-based | Optimistic Gradient Descent (Optax), predicting future gradients to accelerate convergence | 3.0 ± 0.4 | [OptaxOGD / OptaxOAdam](docs/dfbench/Algorithms.md#optaxogd--optaxoadam) |
+| 11. `OptaxSignum` | Gradient-based | Signum optimizer (Optax) utilizing the sign of gradients and momentum | 3.3 ± 0.2 | [OptaxSignum](docs/dfbench/Algorithms.md#optaxsigngd--optaxsignum) |
+| 12. `EvoxPSO (FSPSO)` | Evolutionary | Feature Selection Particle Swarm Optimization (EvoX) to maintain population diversity | 3.6 ± 0.3 | [EvoxPSO variants](docs/dfbench/Algorithms.md#evoxpso-particle-swarm-optimization) |
+| 13. `OptaxRProp` | Gradient-based | Resilient Backpropagation (Optax), using only the sign of gradients for parameter updates | 3.8 ± 0.2 | [OptaxRProp](docs/dfbench/Algorithms.md#optaxrprop) |
+| 14. `CMAESCMA` | Evolutionary | Full-covariance CMA-ES using the `cmaes.CMA` backend | 4.1 ± 0.1 | [CMAESCMA](docs/dfbench/Algorithms.md#cma-family-algorithms-pycma--cmaes--evosax--native-jax) |
+| 15. `EvoxPSO (PSO)` | Evolutionary | Standard Particle Swarm Optimization (EvoX) simulating swarm behavior | 4.1 ± 0.2 | [EvoxPSO variants](docs/dfbench/Algorithms.md#evoxpso-particle-swarm-optimization) |
+| 16. `BotorchTuRBO` | Surrogate-based | Trust Region Bayesian Optimization (TuRBO) using BoTorch's Gaussian processes | 4.5 ± 0.1 | [BotorchTuRBO](docs/dfbench/Algorithms.md#botorchturbo-trust-region-bo) |
+| 17. `BotorchBO` | Surrogate-based | Bayesian Optimization (BoTorch) using Gaussian processes and qLogEI acquisition | 4.7 ± 0.2 | [BotorchBO](docs/dfbench/Algorithms.md#botorchbo-bayesian-optimization) |
+| 18. `RandomSearch` | — | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](docs/dfbench/Algorithms.md#randomsearch) |
+| 19. `VAESampling top2%` | Generative | Variational Autoencoder sampling by latent-space search with Bayesian Optimization. Trained on top 2% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#vaesampling) |
+| 20. `VAESampling top10%` | Generative | VAE trained on 10% of random search samples. | 4.8 ± 0.04 | [VAESampling](docs/dfbench/Algorithms.md#vaesampling) |
 
 *General types follow `dfbench`'s coarse `AlgorithmType` system:
 gradient-based, evolutionary, surrogate-based, and generative.
