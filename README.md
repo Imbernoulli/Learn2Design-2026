@@ -184,7 +184,7 @@ python learn2design/scripts/smoke_test.py
 
 ## Quasi-Universal Interferometer (UIFO)
 
-The given search space of gravitational-wave detectors is visualized below. It consists of a grid structure which can hold different combinations of five building blocks. The beam splitter and isolator blocks can fill the grid centers (in any 90° rotation). The laser, squeezer, and detector blocks can fill the boundary cells, whereas the detector block can only be placed once.
+The given search space of gravitational-wave detectors is visualized below. It consists of a grid structure which can hold different combinations of five building blocks. The beam splitter and directional beam splitter blocks can fill the grid centers (in any 90° rotation). The laser, squeezer, and detector blocks can fill the boundary cells, whereas the detector block can only be placed once.
 
 Each component has parameters that can be optimized within certain
 [ranges](docs/dfbench_overview.md#bounds).
