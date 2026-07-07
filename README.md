@@ -669,6 +669,7 @@ The Objective always records losses. Two boolean flags toggle the common histori
 | --- | --- | --- |
 | `save_time_steps` | `True` | Record elapsed-time stamps per evaluation |
 | `save_params_history` | `True` | Record parameter vectors (reduced for batches) |
+| `save_batched_params_history` | `False` | Store full `(batch, n_params)` parameter arrays instead of the reduced representative point |
 
 Beyond that, pass a list of string tokens to `save`. Each token controls one history, so you can enable `is_feasible` without also storing the bulky `power_values` arrays.
 
@@ -682,8 +683,7 @@ Standard tokens:
 | `batched_loss` | Full `(batch,)` loss vectors instead of batch min |
 | `batched_grad` | Full `(batch, n_params)` gradient arrays |
 | `batched_hessian` | Full `(batch, n_params, n_params)` Hessian arrays |
-| `batched_param` | Full `(batch, n_params)` parameter arrays |
-| `batched` | Convenience alias for all four `batched_*` tokens above |
+| `batched` | Convenience alias for the three `batched_*` tokens above |
 
 Aux tokens:
 

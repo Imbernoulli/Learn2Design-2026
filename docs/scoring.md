@@ -15,7 +15,7 @@ Lower is better.
 
 The value is read from `objective.best_loss` after the run terminates. If your
 algorithm crashes, exceeds memory, or fails to call `objective.value` at all,
-the run's score is evlauated as the initial parameter's loss.
+the run's score is evaluated as the initial parameter's loss.
 
 `NaN` losses are coerced to `+inf` before aggregation.
 
