@@ -336,7 +336,7 @@ In the plots below, we provide comparisons between baselines from different clas
 
 ![Baseline category overview](media/category_algorithms_loss_mean_sem.png)
 
-The table below summarizes the example baselines included in [`learn2design/algorithms`](learn2design/example_algorithms).
+The table below summarizes the example baselines included in [`learn2design/example_algorithms`](learn2design/example_algorithms).
 
 > [!TIP]
 > For a host of other baselines, take a look at [dfbench/algorithms](https://github.com/artificial-scientist-lab/Differometor-Benchmark/tree/main/src/dfbench/algorithms)
@@ -359,7 +359,7 @@ A loss of zero means that the optimizer has discovered the best known human desi
 | 4. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](learn2design/example_algorithms/lbfgs_gd.py) |
 | 5. `JAXOnePlusOneES` | Evolutionary | (1+1)-ES with 1/5 rule, native JAX | | [JAXOnePlusOneES](learn2design/example_algorithms/jax_one_plus_one_es.py) |
 | 6. `JAXMuLambdaES` | Evolutionary | (μ,λ)-ES with truncation selection, native JAX | | [JAXMuLambdaES](learn2design/example_algorithms/jax_mu_lambda_es.py)|
-| 7. `RandomSearch` | Global | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](learn2design/example_algorithms/random_search.py) |
+| 7. `RandomSearch` | Global Search | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](learn2design/example_algorithms/random_search.py) |
 
 
 *General types follow `dfbench`'s coarse `AlgorithmType` system:
@@ -400,8 +400,8 @@ opens.
 
 
 > [!TIP]
-> * Check out [Submission](docs/submission.md) and [Scoring](docs/scoring.md) for further details on the submission system and scoring criteria we use in this competition, respectively.
 > * Take a look at the [FAQs](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/docs/FAQ.md) which might help answer any further questions regarding Learn2Design-2026.
+> * Check out [Submission](docs/submission.md) and [Scoring](docs/scoring.md) for further details on the submission system and scoring criteria we use in this competition, respectively.
 > * [docs/dfbench_overview](docs/dfbench_overview.md) provides a brief overview of the technical details of the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package.
 > * [docs/dfbench](docs/dfbench/) includes a comprehensive documentation of the __dfbench__ package.  
 
