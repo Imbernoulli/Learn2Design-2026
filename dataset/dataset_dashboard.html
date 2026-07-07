@@ -177,12 +177,79 @@
       line-height: 1.35;
       margin: 0;
     }
+    .selected-entry {
+      display: grid;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .selected-entry h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .selected-entry-grid {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 8px 12px;
+      margin: 0;
+    }
+    .selected-entry-grid dt,
+    .selected-entry-grid dd {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .selected-entry-grid dt {
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .selected-entry-grid dd {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .entry-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    button.copy-button {
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button.copy-button:disabled {
+      color: var(--muted);
+      cursor: not-allowed;
+      opacity: 0.62;
+    }
+    button.copy-button:not(:disabled):hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+    #copyStatus {
+      align-self: center;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 18px;
+    }
     @media (max-width: 860px) {
       main { width: min(100vw - 20px, 1220px); margin-top: 16px; }
       .controls { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .category-definitions dl { grid-template-columns: 1fr; gap: 4px; }
       .category-definitions dd { margin-bottom: 6px; }
+      .selected-entry-grid { grid-template-columns: 1fr; gap: 4px; }
+      .selected-entry-grid dd { margin-bottom: 6px; }
       #plot { height: 590px; }
       #topologyPlot { height: 680px; }
     }
@@ -259,6 +326,24 @@
     <div class="stat">
       <div class="stat-title">Below random baseline</div>
       <div id="baselineBelow" class="stat-value">0</div>
+    </div>
+  </section>
+
+  <section class="selected-entry" aria-label="Selected dataset entry">
+    <h2>Selected Entry</h2>
+    <dl class="selected-entry-grid">
+      <dt>Unique hash</dt>
+      <dd><code id="selectedHash">Click a point in either plot</code></dd>
+      <dt>Loss</dt>
+      <dd><code id="selectedLoss">-</code></dd>
+      <dt>Category</dt>
+      <dd><span id="selectedCategory">-</span></dd>
+      <dt>Topology</dt>
+      <dd><code id="selectedTopology">-</code></dd>
+    </dl>
+    <div class="entry-actions">
+      <button id="copyVisualization" class="copy-button" type="button" disabled>Copy visualization command</button>
+      <span id="copyStatus" role="status" aria-live="polite"></span>
     </div>
   </section>
 
@@ -4169,7 +4254,15 @@ const reoptimizedBelow = document.getElementById("reoptimizedBelow");
 const size4Below = document.getElementById("size4Below");
 const zeroBelow = document.getElementById("zeroBelow");
 const baselineBelow = document.getElementById("baselineBelow");
+const selectedHash = document.getElementById("selectedHash");
+const selectedLoss = document.getElementById("selectedLoss");
+const selectedCategory = document.getElementById("selectedCategory");
+const selectedTopology = document.getElementById("selectedTopology");
+const copyVisualization = document.getElementById("copyVisualization");
+const copyStatus = document.getElementById("copyStatus");
 const formatCount = new Intl.NumberFormat("en-US");
+let selectedEntry = null;
+let copyStatusTimer = null;
 
 thresholdRange.min = metadata.sliderMin;
 thresholdRange.max = metadata.sliderMax;
@@ -4219,9 +4312,41 @@ function designCategory(size, group) {
   return "3x3 UIFOs";
 }
 
-function makeCustomData(group) {
+function explicitEntryIndex(group, index) {
+  if (!Array.isArray(group.entryIndices)) return null;
+  const entryIndex = Number(group.entryIndices[index]);
+  return Number.isInteger(entryIndex) ? entryIndex : null;
+}
+
+function categoryEntryIndex(group, index, offset) {
+  return explicitEntryIndex(group, index) ?? offset + index;
+}
+
+const originalOffset = 0;
+const reoptimizedOffset = metadata.originalTotal;
+const size4Offset = metadata.originalTotal + metadata.reoptimizedTotal;
+const entryIndexByHash = new Map();
+
+function addEntryIndicesByHash(group, offset) {
+  group.uniqueHashes.forEach((hash, index) => {
+    if (!entryIndexByHash.has(hash)) {
+      entryIndexByHash.set(hash, categoryEntryIndex(group, index, offset));
+    }
+  });
+}
+
+addEntryIndicesByHash(payload.original, originalOffset);
+addEntryIndicesByHash(payload.reoptimized, reoptimizedOffset);
+addEntryIndicesByHash(payload.size4, size4Offset);
+
+function topologyEntryIndex(group, index) {
+  return explicitEntryIndex(group, index) ?? entryIndexByHash.get(group.uniqueHashes[index]) ?? "";
+}
+
+function makeCustomData(group, offset) {
   return group.losses.map((loss, index) => [
     loss,
+    categoryEntryIndex(group, index, offset),
     group.uniqueHashes[index],
     group.initializedFrom[index],
     group.topologies[index],
@@ -4236,6 +4361,7 @@ function makeCustomData(group) {
 function makeTopologyCustomData(group) {
   return group.losses.map((loss, index) => [
     loss,
+    topologyEntryIndex(group, index),
     group.uniqueHashes[index],
     group.initializedFrom[index],
     group.topologies[index],
@@ -4256,13 +4382,13 @@ const traces = [
     name: "3x3 UIFOs",
     x: payload.original.losses,
     y: payload.original.y,
-    customdata: makeCustomData(payload.original),
+    customdata: makeCustomData(payload.original, originalOffset),
     marker: {
       color: "rgba(15, 118, 110, 0.42)",
       size: 4,
       line: { color: "rgba(15, 118, 110, 0.76)", width: 0.25 }
     },
-    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Hash: %{customdata[1]}<br>Category: %{customdata[8]}<br>Size: %{customdata[7]}<br>Topology: %{customdata[3]}<br>Complexity: %{customdata[4]}<br>Source: %{customdata[5]} run %{customdata[6]}<extra>3x3 UIFOs</extra>"
+    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Entry index: %{customdata[1]}<br>Hash: %{customdata[2]}<br>Category: %{customdata[9]}<br>Size: %{customdata[8]}<br>Topology: %{customdata[4]}<br>Complexity: %{customdata[5]}<br>Source: %{customdata[6]} run %{customdata[7]}<extra>3x3 UIFOs</extra>"
   },
   {
     type: "scattergl",
@@ -4270,13 +4396,13 @@ const traces = [
     name: "reoptimized 3x3 UIFOs",
     x: payload.reoptimized.losses,
     y: payload.reoptimized.y,
-    customdata: makeCustomData(payload.reoptimized),
+    customdata: makeCustomData(payload.reoptimized, reoptimizedOffset),
     marker: {
       color: "rgba(194, 65, 12, 0.82)",
       size: 6,
       line: { color: "rgba(124, 45, 18, 0.95)", width: 0.35 }
     },
-    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Hash: %{customdata[1]}<br>Category: %{customdata[8]}<br>Parent: %{customdata[2]}<br>Size: %{customdata[7]}<br>Topology: %{customdata[3]}<br>Complexity: %{customdata[4]}<br>Source: %{customdata[5]} run %{customdata[6]}<extra>reoptimized 3x3 UIFOs</extra>"
+    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Entry index: %{customdata[1]}<br>Hash: %{customdata[2]}<br>Category: %{customdata[9]}<br>Parent: %{customdata[3]}<br>Size: %{customdata[8]}<br>Topology: %{customdata[4]}<br>Complexity: %{customdata[5]}<br>Source: %{customdata[6]} run %{customdata[7]}<extra>reoptimized 3x3 UIFOs</extra>"
   },
   {
     type: "scattergl",
@@ -4284,14 +4410,14 @@ const traces = [
     name: "4x4 UIFOs",
     x: payload.size4.losses,
     y: payload.size4.y,
-    customdata: makeCustomData(payload.size4),
+    customdata: makeCustomData(payload.size4, size4Offset),
     marker: {
       color: "rgba(37, 99, 235, 0.84)",
       size: 7,
       symbol: "diamond",
       line: { color: "rgba(30, 64, 175, 1)", width: 0.45 }
     },
-    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Hash: %{customdata[1]}<br>Category: %{customdata[8]}<br>Size: %{customdata[7]}<br>Topology: %{customdata[3]}<br>Complexity: %{customdata[4]}<br>Source: %{customdata[5]} run %{customdata[6]}<extra>4x4 UIFOs</extra>"
+    hovertemplate: "Loss: %{customdata[0]:.6g}<br>Entry index: %{customdata[1]}<br>Hash: %{customdata[2]}<br>Category: %{customdata[9]}<br>Size: %{customdata[8]}<br>Topology: %{customdata[4]}<br>Complexity: %{customdata[5]}<br>Source: %{customdata[6]} run %{customdata[7]}<extra>4x4 UIFOs</extra>"
   }
 ];
 
@@ -4308,7 +4434,7 @@ const topologyTraces = payload.topology.groups.map((group) => ({
     size: group.markerSize,
     line: { color: "rgba(17, 24, 39, 0.26)", width: 0.25 }
   },
-  hovertemplate: "Loss: %{customdata[0]:.6g}<br>Hash: %{customdata[1]}<br>Size: %{customdata[9]}<br>Category: %{customdata[10]}<br>Topology: %{customdata[3]}<br>Topology count: %{customdata[4]}<br>Color group: %{customdata[5]}<br>Complexity: %{customdata[6]}<br>Source: %{customdata[7]} run %{customdata[8]}<extra>%{fullData.name}</extra>"
+  hovertemplate: "Loss: %{customdata[0]:.6g}<br>Entry index: %{customdata[1]}<br>Hash: %{customdata[2]}<br>Size: %{customdata[10]}<br>Category: %{customdata[11]}<br>Topology: %{customdata[4]}<br>Topology count: %{customdata[5]}<br>Color group: %{customdata[6]}<br>Complexity: %{customdata[7]}<br>Source: %{customdata[8]} run %{customdata[9]}<extra>%{fullData.name}</extra>"
 }));
 
 function makeBaseLayout(titleText) {
@@ -4483,11 +4609,85 @@ function updateThreshold(rawValue, syncInputs = true) {
   });
 }
 
+function setCopyStatus(message) {
+  copyStatus.textContent = message;
+  if (copyStatusTimer !== null) {
+    window.clearTimeout(copyStatusTimer);
+  }
+  copyStatusTimer = window.setTimeout(() => {
+    copyStatus.textContent = "";
+    copyStatusTimer = null;
+  }, 2200);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  try {
+    const copied = document.execCommand("copy");
+    return copied ? Promise.resolve() : Promise.reject(new Error("copy command failed"));
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
+function selectedEntryCommand() {
+  if (!selectedEntry) return "";
+  return `python dataset/examples/visualize_entry.py --hash ${selectedEntry.uniqueHash}`;
+}
+
+function updateSelectedEntry(customdata) {
+  if (!Array.isArray(customdata)) return;
+
+  selectedEntry = {
+    loss: customdata[0],
+    entryIndex: customdata[1],
+    uniqueHash: customdata[2],
+    parentHash: customdata[3],
+    topology: customdata[4],
+    category: customdata[customdata.length - 1]
+  };
+
+  selectedHash.textContent = selectedEntry.uniqueHash || "-";
+  selectedLoss.textContent = displayLoss(Number(selectedEntry.loss));
+  selectedCategory.textContent = selectedEntry.category || "-";
+  selectedTopology.textContent = selectedEntry.topology || "-";
+  copyVisualization.disabled = !selectedEntry.uniqueHash;
+  copyStatus.textContent = "";
+}
+
+function handlePlotClick(event) {
+  const point = event.points && event.points[0];
+  if (point) {
+    updateSelectedEntry(point.customdata);
+  }
+}
+
+function handleCopy() {
+  const text = selectedEntryCommand();
+  if (!text) return;
+  copyText(text)
+    .then(() => setCopyStatus("Copied."))
+    .catch(() => setCopyStatus("Copy failed; select the text manually."));
+}
+
 Promise.all([
   Plotly.newPlot("plot", traces, layout, config),
   Plotly.newPlot("topologyPlot", topologyTraces, topologyLayout, config)
 ]).then(() => {
   updateThreshold(metadata.defaultThreshold, true);
+  document.getElementById("plot").on("plotly_click", handlePlotClick);
+  document.getElementById("topologyPlot").on("plotly_click", handlePlotClick);
 });
 
 thresholdRange.addEventListener("input", (event) => {
@@ -4499,6 +4699,8 @@ thresholdNumber.addEventListener("input", (event) => {
   thresholdRange.value = event.target.value;
   updateThreshold(event.target.value, false);
 });
+
+copyVisualization.addEventListener("click", handleCopy);
 </script>
 </body>
 </html>

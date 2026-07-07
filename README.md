@@ -184,11 +184,11 @@ python learn2design/scripts/smoke_test.py
 
 ## Quasi-Universal Interferometer (UIFO)
 
-The given search space of gravitational-wave detectors is visualized below. It consists of a grid structure which can hold different combinations of five building blocks. The two beam splitter and isolator blocks can fill the grid centers (in any rotation). The three laser, squeezer, and detector blocks can fill the boundary cells whereas the detector block can only be placed once.
+The given search space of gravitational-wave detectors is visualized below. It consists of a grid structure which can hold different combinations of five building blocks. The beam splitter and isolator blocks can fill the grid centers (in any 90° rotation). The laser, squeezer, and detector blocks can fill the boundary cells, whereas the detector block can only be placed once.
 
 Each component has parameters that can be optimized within certain ranges.
 
-The goal is to find algorithms that work well on any UIFO sample from this search space, two examples are also visualized in the figure below. Each evaluation will run on 10 hidden topologies (specific combinations of the five building blocks like the two examples shown below).
+The goal is to find algorithms that work well on any UIFO topology sampled from this search space, two examples topologies are visualized in the figure below. Each evaluation will run on its own 10 hidden topologies.
 
 <p align="center">
   <img src="media/UIFO.png" alt="Quasi-Universal Interferometer (UIFO)" width="720">
@@ -227,7 +227,6 @@ The repository is organized around a small number of entry points:
 |---|---|
 | `learn2design/` | Package code, including example algorithms and runnable scripts. |
 | `dataset/` | Precomputed UIFO design corpus, dataset README, and loading/evaluation examples. |
-| `baselines/` | Baseline result plots grouped by algorithm family. |
 | `docs/` | Competition docs plus the bundled `dfbench` reference pages. |
 | `pyproject.toml` | Package metadata and dependency definitions. |
 
