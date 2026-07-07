@@ -84,12 +84,14 @@ as the starting point for describing each team's method in this joint analysis.
 - We run it on 10 held-out (hidden) topologies, every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
   an AMD EPYC 7302 CPU.
 - The best sensitivity (conditioned on satifying all constraints) will be recorded for each of the 10 runs.
-- The average best sensitivity over the 10 runs will be used to score your submission. Lower is better.
+- The average best sensitivity over the 10 4h runs will be used to score your submission. Lower is better.
 - Your score will get published to that monthly leaderboard and will be used for your final evaluation.
 
 A "topology" fixes the choice of optical components for an experimental ansatz; you only optimize 
 the continuous parameters attached to it. These could be laser power, mirror 
 reflectivity, grid distance, etc.
+
+Your algorithm is allowed to evaluate the objective in batches via `jax.vmap` (the `obj.vmap_*` methods). The whole batch runs in a single vmapped forward pass, which saves significant time per element opposed to looping single evals. This is encouraged for population-based methods (PSO, CMA-ES, evolutionary strategies) and any algorithm that naturally evaluates multiple candidates per step.
 
 ## Quasi-Universal Interferometer (UIFO)
 
