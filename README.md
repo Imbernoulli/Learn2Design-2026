@@ -4,7 +4,7 @@
 # NeurIPS 2026 Challenge: Learn2Design-2026
 [![License](https://img.shields.io/github/license/artificial-scientist-lab/Learn2Design-2026)](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/LICENSE)
 [![image](https://img.shields.io/pypi/pyversions/dfbench.svg)](https://pypi.python.org/pypi/dfbench)
-[![GitHub](https://img.shields.io/badge/GitHub-dfbench-rgb(50,50,200)?logo=github&logoColor=white)](https://github.com/artificial-scientist-lab/Differometor-Benchmark)
+[![GitHub](https://img.shields.io/badge/GitHub-dfbench-3232c8?logo=github&logoColor=white)](https://github.com/artificial-scientist-lab/Differometor-Benchmark)
 
 
 
@@ -332,7 +332,14 @@ baselines/
 
 ## Baselines
 
-The table below summarizes the baseline plots in [`baselines/`](baselines/).
+In the plots below, we provide comparisons between baselines from different classes of algorithms.
+
+![Baseline category overview](media/category_algorithms_loss_mean_sem.png)
+
+The table below summarizes the example baselines included in [`learn2design/algorithms`](learn2design/example_algorithms).
+
+> [!TIP] For a host of other baselines, take a look at [dfbench/algorithms](https://github.com/artificial-scientist-lab/Differometor-Benchmark/tree/main/src/dfbench/algorithms)
+
 Rows are ordered by displayed mean loss; ties in the rounded values are broken
 by displayed SEM and then alphabetically.
 
@@ -342,11 +349,6 @@ the matching documented algorithm section in [`docs/dfbench/Algorithms.md`](docs
 
 A loss of zero means that the optimizer has discovered the best known human designed gravitational wave detector (within the same technical resources, such as arm lengths). **Losses below zero are possible and [expected](https://journals.aps.org/prx/abstract/10.1103/PhysRevX.15.021012)**.
 
-The following example baselines are included in this repository in [learn2design/examples_algorithms](learn2design/example_algorithms/):
-
-> [!TIP] For a host of other baselines, take a look at [dfbench/algorithms](https://github.com/artificial-scientist-lab/Differometor-Benchmark/tree/main/src/dfbench/algorithms)
-
-![Baseline category overview](baselines/category_algorithms_loss_mean_sem.png)
 
 | Rank & name | General type* | Detailed implementation | Average loss ± SEM | Link to example |
 |---|---|---|---|---|
