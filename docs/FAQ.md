@@ -93,7 +93,7 @@ Different algorithms have vastly different per-evaluation computational costs. P
 
 The loss is designed to be interpretable: If there are no power violations, a loss of -1 means a 10x mean increase in sensitivity, while -2 corresponds to a 100x mean increase. Similarily, a loss of 1 means a 10x decrease in sensitivity while 2 means a 100x decrease.
 
-A loss of zero means the optimizer has matched the mean sensitivity accross frequencies of the human-designed aLIGO gravitational wave detector. Achieving a loss below zero means your algorithm has discovered a setup that outperforms current reference designs in the context of the simulation which takes into account specific noise characteristics. Negative losses are completely possible and expected.
+A loss of zero means the optimizer has matched the mean sensitivity accross frequencies of the human-designed "Voyager" gravitational wave detector. Achieving a loss below zero means your algorithm has discovered a setup that outperforms current reference designs in the context of the simulation which takes into account specific noise characteristics. Negative losses are completely possible and expected.
 
 ---
 
