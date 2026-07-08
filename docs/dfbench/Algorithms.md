@@ -678,7 +678,7 @@ optimizer.optimize(
 
 ### BotorchTuRBO (Trust Region BO)
 
-Implements TuRBO-1 from [Eriksson et al. 2019](https://proceedings.neurips.cc/paper/2019/hash/6c990b7aca7bc7e0d4b91ac0c4ed2f54-Abstract.html). Maintains a local trust region that expands on success and shrinks on failure, making it effective for high-dimensional problems where global BO struggles.
+Implements TuRBO-1 from [Eriksson et al. 2019](https://papers.nips.cc/paper/8788-scalable-global-optimization-via-local-bayesian-optimization). Maintains a local trust region that expands on success and shrinks on failure, making it effective for high-dimensional problems where global BO struggles.
 
 ```python
 optimizer = BotorchTuRBO(batch_size=5)

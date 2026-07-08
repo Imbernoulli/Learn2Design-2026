@@ -3,12 +3,12 @@
 ## Competition Overview
 
 ### What is the goal of the Learn2Design competition?
-Learn2Design focuses on the automated design of highly sensitive gravitational-wave detectors under experimental constraints. Given a quasi-universal interferometer (UIFO) topology, your task is to write an algorithm that tunes roughly 200 continuous parameters within a fixed compute budget to minimize a simulator-defined loss.
+Learn2Design focuses on the automated design of highly sensitive gravitational-wave detectors under experimental constraints. Given a quasi-universal interferometer (UIFO) [topology](dfbench_overview.md#explanation-of-topology), your task is to write an algorithm that tunes roughly 200 continuous parameters within a fixed compute budget to minimize a simulator-defined [loss](dfbench/FAQ.md#what-objective-function-is-optimized-for-uifo).
 
 ### What data and resources are provided?
 Participants are provided with two major resources:
 * **Differometor:** An auto-differentiable JAX-based physics simulator.
-* **Precomputed Design Corpus:** Approximately 30,000 high-quality detector designs generated through a 360,000 GPU-hour exploration campaign. 
+* **Precomputed Design Corpus:** Approximately 30,000 high-quality detector designs generated through a 360,000 GPU-hour exploration campaign; see the [dataset README](../dataset/README.md).
 * **Baselines:** Over 10 baseline optimization strategies spanning gradient-based, evolutionary, surrogate-based, and generative methods.
 
 ### What is the prize for winning?
@@ -27,7 +27,7 @@ Additionally, there are two special prizes of EUR 3,000 each. These are judged b
 ## Objective Function & UIFO
 
 ### What is a topology?
-A "topology" fixes the discrete choice and placement of optical components (like lasers, squeezers, detectors, and beam splitters) for a Quasi-Universal Interferometer (UIFO). When optimizing a given topology, you only tune the continuous parameters attached to it, such as laser power, mirror reflectivity, and grid distances.
+A "[topology](dfbench_overview.md#explanation-of-topology)" fixes the discrete choice and placement of optical components (like lasers, squeezers, detectors, and beam splitters) for a Quasi-Universal Interferometer (UIFO). When optimizing a given topology, you only tune the continuous parameters attached to it, such as laser power, mirror reflectivity, and grid distances.
 
 <img src="../media/UIFO.png" alt="UIFO Topology Picture" width="520" />
 
@@ -47,10 +47,10 @@ The warmup time for the objective function (or gradient variants) takes around 2
 ## Getting Started & Submissions
 
 ### What exactly do I submit?
-You submit executable optimization algorithms, not fixed designs or parameter vectors. Your submission must be a Python class that subclasses `OptimizationAlgorithm` and implements the `optimize(self, objective, ...)` method. 
+You submit executable optimization algorithms, not fixed designs or parameter vectors; see the [submission rules](submission.md#what-you-submit). Your submission must be a Python class that subclasses `OptimizationAlgorithm` and implements the `optimize(self, objective, ...)` method.
 
 ### What is the `Objective` class and why must I use it?
-The `Objective` class is the sole interface between your algorithm and the underlying physics simulation. It transparently handles:
+The [`Objective`](dfbench/Objective-API-Reference.md) class is the sole interface between your algorithm and the underlying physics simulation. It transparently handles:
 * Dispatching to bounded or unbounded objective functions.
 * Preparing `jax.grad`, `jax.hessian`, `jax.value_and_grad`, and batched `vmap` variants.
 * Recording synchronized histories of losses, gradients, parameters, and timestamps.
@@ -68,7 +68,7 @@ It depends entirely on your chosen algorithmic approach:
 * **Bounded Space (`unbounded=False`):** Best for Evolutionary and Surrogate-based algorithms (like Random Search, PSO, CMA-ES, or BO) because populations and acquisitions naturally respect physical box constraints.
 * **Unbounded Space (`unbounded=True`):** Best for Gradient-based methods (like Adam or L-BFGS). Optimization in clipped-bounded space can produce zero gradients at boundaries. Setting `unbounded=True` applies a sigmoid transform so gradients remain smooth and non-zero everywhere.
 
-Note: The `Objective` handles the scaling and transformations (also of gradients) automatically. You can also implement your own transformation via `set_space_mode(unbounded, unit_mapping=None, inverse_unit_mapping=None)`. See the [Objective API Reference](dfbench/Objective-API-Reference.md) for details.
+Note: The `Objective` handles the scaling and transformations (also of gradients) automatically. You can also implement your own transformation via `set_space_mode(unbounded, unit_mapping=None, inverse_unit_mapping=None)`. See the [bounded/unbounded guide](dfbench/Implementing-a-New-Algorithm.md#bounded-vs-unbounded-detailed-guide) for details.
 
 ### I want to use PyTorch. Is that supported?
 Yes. Differometor and `Objective` are built in JAX, but many optimization libraries (like EvoX or BoTorch) use PyTorch. We provide lightweight conversion utilities (`t2j` to convert PyTorch to JAX, and `j2t` to convert JAX to PyTorch). The conversion routes through NumPy and has negligible overhead.
@@ -84,7 +84,7 @@ We checked for common issues that can cause NaN or Inf values. These should not 
 ## Evaluation & Benchmarking
 
 ### How will my algorithm be evaluated and ranked?
-Algorithms will be ranked by their average performance on 10 hidden topologies evaluated by the organizers. The underlying discrete topology space contains over 500 million possible choices. For the final evaluation, each algorithm will be run for 4 hours on a single NVIDIA A100 GPU per hidden topology. 
+Algorithms will be [ranked](scoring.md) by their average performance on 10 hidden topologies evaluated by the organizers. The underlying discrete topology space contains over 500 million possible choices. For the final evaluation, each algorithm will be run for 4 hours on a single NVIDIA A100 GPU per hidden topology.
 
 ### Why is the budget measured in wall-clock time instead of iterations?
 Different algorithms have vastly different per-evaluation computational costs. Parallelizing over VMAP batches can further amplify these differences. Measuring by wall-clock time ensures a fair comparison of what can be achieved within a fixed compute budget. This exact metric also reflects real-world constraints.
@@ -94,6 +94,8 @@ Different algorithms have vastly different per-evaluation computational costs. P
 The loss is designed to be interpretable: If there are no power violations, a loss of -1 means a 10x mean increase in sensitivity, while -2 corresponds to a 100x mean increase. Similarily, a loss of 1 means a 10x decrease in sensitivity while 2 means a 100x decrease.
 
 A loss of zero means the optimizer has matched the mean sensitivity accross frequencies of the human-designed "Voyager" gravitational wave detector. Achieving a loss below zero means your algorithm has discovered a setup that outperforms current reference designs in the context of the simulation which takes into account specific noise characteristics. Negative losses are completely possible and expected.
+
+To build intuition, open the [interactive sensitivity loss explorer](sensitivity_loss_explorer.html).
 
 ---
 

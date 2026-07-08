@@ -255,6 +255,8 @@ while not obj.budget_exceeded:
 
 ## Choosing the Right Evaluation Method
 
+See the [Objective API Reference](Objective-API-Reference.md#evaluation-methods) for the full method contract.
+
 | Method | When to use | Logs |
 |--------|-------------|------|
 | `obj.value(params)` | Need loss only, single point | loss, params |
@@ -386,7 +388,7 @@ losses_jax = obj.vmap_value(params_jax)
 losses_torch = j2t(losses_jax)
 ```
 
-The conversion goes through NumPy and adds negligible overhead relative to evaluation time.
+The conversion goes through NumPy and adds negligible overhead relative to evaluation time; see [tensor conversion helpers](Utilities-and-Helpers.md#tensor-conversion-t2j-j2t).
 
 ### JAX-based libraries (Optax)
 

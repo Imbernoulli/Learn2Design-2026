@@ -8,9 +8,9 @@ This folder contains the precomputed pure-broadband UIFO design corpus:
 - `examples/evaluate_entry.py`: evaluates a saved entry with the competition `UIFOProblem`.
 - `examples/visualize_entry.py`: renders one entry as an interactive Differometor setup HTML.
 
-The saved `loss` values were computed for broadband sensitivity using 50 frequency
+The saved [`loss`](../docs/dfbench/FAQ.md#what-objective-function-is-optimized-for-uifo) values were computed for broadband sensitivity using 50 frequency
 points. To reproduce a saved loss with the competition code, construct the problem
-with the entry's `size`, `topology_string`, and `n_frequencies=50`, then evaluate
+with the entry's `size`, [`topology_string`](../docs/dfbench_overview.md#explanation-of-topology), and `n_frequencies=50`, then evaluate
 the saved `bounded_params`.
 
 ## Interactive Visualization
@@ -88,7 +88,7 @@ Inspect one saved setup:
 python dataset/examples/load_entry.py --index 0
 ```
 
-Evaluate one saved setup with the competition objective:
+Evaluate one saved setup with the competition [`UIFOProblem`](../docs/dfbench/Problems.md#uifoproblem):
 
 ```bash
 python dataset/examples/evaluate_entry.py --index 0

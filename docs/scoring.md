@@ -9,11 +9,11 @@ $$
 s_{\text{run}} = \min_{t \in [0,\, T_{\text{budget}}]} \mathcal{L}(\theta_t)
 $$
 
-where $\mathcal{L}$ is the sensitivity-derived loss returned by
-`Objective.value` and $\theta_t$ are the parameters evaluated at time $t$.
+where $\mathcal{L}$ is the [sensitivity-derived loss](dfbench/FAQ.md#what-objective-function-is-optimized-for-uifo) returned by
+[`Objective.value`](dfbench/Objective-API-Reference.md#single-point-evaluation) and $\theta_t$ are the parameters evaluated at time $t$.
 Lower is better.
 
-The value is read from `objective.best_loss` after the run terminates. If your
+The value is read from [`objective.best_loss`](dfbench/Objective-API-Reference.md#best-results) after the run terminates. If your
 algorithm crashes, exceeds memory, or fails to call `objective.value` at all,
 the run's score is evaluated as the initial parameter's loss.
 

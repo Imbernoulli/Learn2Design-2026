@@ -88,11 +88,11 @@ as the starting point for describing each team's method in this joint analysis.
 - You submit your optimization algorithm.
 - We run it on 10 held-out (hidden) topologies, every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
   an AMD EPYC 7302 CPU.
-- The best sensitivity (conditioned on satifying all constraints) will be recorded for each of the 10 runs.
+- The best sensitivity (conditioned on [satisfying all constraints](docs/dfbench_overview.md#power-constraints-and-aux-diagnostics)) will be recorded for each of the 10 runs.
 - The average best sensitivity over the 10 4h runs will be used to score your submission. Lower is better.
 - Your score will get published to that monthly leaderboard and will be used for your final evaluation.
 
-A "topology" fixes the choice of optical components for an experimental ansatz; you only optimize 
+A "[topology](docs/dfbench_overview.md#explanation-of-topology)" fixes the choice of optical components for an experimental ansatz; you only optimize
 the continuous parameters attached to it. These could be laser power, mirror 
 reflectivity, grid distance, etc.
 
@@ -178,7 +178,7 @@ optimizer.optimize(objective)
 
 <br>
 
-You can find most functionality of the Objective API at [`docs/dfbench_overview.md`](docs/dfbench_overview.md).
+You can find most functionality of the Objective API at [`docs/dfbench_overview.md`](docs/dfbench_overview.md). For a simple explanation of the UIFO loss, see [What objective function is optimized for UIFO?](docs/dfbench/FAQ.md#what-objective-function-is-optimized-for-uifo) or open the [interactive sensitivity loss explorer](docs/sensitivity_loss_explorer.html). In particular, be aware that constrained problems let you [change the penalty function](docs/dfbench_overview.md#power-constraints-and-aux-diagnostics) used during optimization.
 
 ## Install
 
@@ -382,9 +382,9 @@ opens.
 
 
 > [!TIP]
-> * [docs/dfbench_overview](docs/dfbench_overview.md) gives a brief overview of alle the functionality provided by the Objective and the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package in general.
+> * [docs/dfbench_overview](docs/dfbench_overview.md) gives a brief overview of all the functionality provided by the Objective and the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package in general.
 > * Check out [Submission](docs/submission.md) and [Scoring](docs/scoring.md) for further details on the submission system and scoring criteria we use in this competition, respectively.
-> * Take a look at the [FAQs](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/docs/FAQ.md) which might help answer any further questions regarding Learn2Design-2026.
+> * Take a look at the [FAQs](docs/FAQ.md) which might help answer any further questions regarding Learn2Design-2026.
 > * [docs/dfbench](docs/dfbench/) includes a comprehensive documentation of the __dfbench__ package.  
 
 

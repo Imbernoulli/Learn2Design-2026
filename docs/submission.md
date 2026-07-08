@@ -21,7 +21,7 @@ your whole submission directory is mounted read-only inside the container.
 
 ## Using the Differometor-30k dataset
 
-Submissions are **encouraged** to use the publicly released `Differometor-30k`
+Submissions are **encouraged** to use the publicly released [`Differometor-30k`](../dataset/README.md)
 dataset for pre-training surrogates, initial-point models, warm-starts, or
 any other purpose. There is no penalty for spending the entire budget on
 surrogate inference without ever calling `objective.value()`. If your surrogate
@@ -38,7 +38,7 @@ What you may **not** do with the dataset:
 
 ## Time budget
 
-The budget is 4 hours of `Objective.value` / `Objective.value_and_grad`
+The budget is 4 hours of [`Objective.value`](dfbench/Objective-API-Reference.md#single-point-evaluation) / [`Objective.value_and_grad`](dfbench/Objective-API-Reference.md#single-point-evaluation)
 wall-clock time per topology. Concretely:
 
 - The clock starts on the first call after `objective.start_logging()`.
@@ -84,8 +84,8 @@ the eval environment before running you.
    network access. The filesystem is writable; the container is ephemeral
    and discarded after the run, so anything you write is gone afterwards.
 2. For each of the 10 topologies, your `optimize()` is called once with a
-   fresh `Objective`, a fixed random seed, and the budget described above.
-3. After the run, the best loss recorded in `objective.best_loss` is the
+   fresh [`Objective`](dfbench/Objective-API-Reference.md), a fixed random seed, and the budget described above.
+3. After the run, the best loss recorded in [`objective.best_loss`](dfbench/Objective-API-Reference.md#best-results) is the
    result for that topology.
 4. Your score for the month is the mean of the 10 best-loss values.
 

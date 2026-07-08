@@ -2,7 +2,7 @@
 
 ## What `Objective` gives you
 
-A quick summary of the methods you'll touch most often. Data logging is done automatically (you will have to choose which metrics to log by [`save`](../docs/dfbench/Objective-API-Reference.md#choosing-what-to-save) parameter). Budget is tracked and enforced after each call.
+A quick summary of the methods you'll touch most often. Data logging is done automatically (you will have to choose which metrics to log by [`save`](dfbench/Objective-API-Reference.md#choosing-what-to-save) parameter). Budget is tracked and enforced after each call.
 
 ### Evaluation (single-point)
 
@@ -96,7 +96,7 @@ A quick summary of the methods you'll touch most often. Data logging is done aut
 | `objective.output_to_files(...)` | Human-readable JSON + PNG loss/sensitivity plots. |
 | `objective.get_summary()` | Snapshot dict of eval count, time, best/current loss, budget flags. |
 
-Full reference: [local `dfbench` docs](../docs/dfbench/Objective-API-Reference.md) or [`dfbench` wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki)
+Full reference: [local `dfbench` docs](dfbench/Objective-API-Reference.md) or [`dfbench` wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki)
 
 ---
 
@@ -255,13 +255,15 @@ objective = Objective(problem, max_time=300)  # Depending on hardware, 5 minutes
 
 One more difference: `UIFOProblem` topologies can be randomized, while `ConstrainedVoyagerProblem` is a single fixed design. So Voyager is good for mechanics and hyperparameter sweeps, but it does not tell you how your algorithm generalizes across topologies or even the UIFO in general. For that you need to run on `UIFOProblem` with several different `topology_seed` values. Iterate through different seeds there.
 
-There are two more problems in dfbench (`VoyagerProblem`, `VoyagerTuningProblem`) that use a simpler single-noise model and have no power constraints. They are useful for unit tests and quick sanity checks but are not representative of the competition objective. See [docs/dfbench/Problems.md](../docs/dfbench/Problems.md) for the full hierarchy.
+There are two more problems in dfbench (`VoyagerProblem`, `VoyagerTuningProblem`) that use a simpler single-noise model and have no power constraints. They are useful for unit tests and quick sanity checks but are not representative of the competition objective. See [docs/dfbench/Problems.md](dfbench/Problems.md) for the full hierarchy.
 
 ---
 
 ## Power Constraints and Aux Diagnostics
 
 The UIFO loss is not just composed of points on the sensitivity curve. It also penalizes optical power that exceeds physical thresholds, and it exposes a set of auxiliary diagnostics you can read alongside the loss. This matters for how you score and what you log.
+
+For a browser-based intuition builder, open the [interactive sensitivity loss explorer](sensitivity_loss_explorer.html).
 
 The optimization is subject to the penalty being zero! This corresponds to the below boolean `is_feasible`. For the optimization, only the best feasible loss per run is counted towards the score. You are allowed (and also encouraged) to modify the pentalty function to fit your algorithm best but the resulting loss is only relevant to the score inisde the feasible regime.
 
@@ -271,8 +273,8 @@ Three power thresholds are enforced, one per component group:
 
 | Group | Threshold constant | What it limits |
 | --- | --- | --- |
-| `hard` | `HARD_SIDE_POWER_THRESHOLD` (3.5e6 W) | Power on mirror/beamsplitter side ports |
-| `soft` | `SOFT_SIDE_POWER_THRESHOLD` (2e3 W) | Softer limit, gradual penalty |
+| `hard` | `HARD_SIDE_POWER_THRESHOLD` (3.5e6 W) | Power on mirror/beamsplitter ports with coating |
+| `soft` | `SOFT_SIDE_POWER_THRESHOLD` (2e3 W) | Power on mirror/beamsplitter ports without coating |
 | `detector` | `DETECTOR_POWER_THRESHOLD` (1e-2 W) | Power on detector ports |
 
 For each evaluation the problem computes the per-group powers, calls `power_penalty_fn(value, threshold)` element-wise, and sums the results into the loss. Three presets ship with dfbench:
@@ -428,5 +430,3 @@ obj.best_is_feasible     # True/False/None (None if is_feasible was never enable
 ### Use during evaluation
 
 For the competition, we will log is_feasible together with the loss and parameters during evaluation. If the algorithm is using vmap, all three tokens are batched to preserve information about all poitns evaluated (the best loss does not need to be a feasible point).
-
-

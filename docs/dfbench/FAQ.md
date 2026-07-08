@@ -4,6 +4,20 @@
 
 ## Algorithm Implementation
 
+### What objective function is optimized for UIFO?
+
+For `UIFOProblem`, your algorithm evaluates `objective.value(params)`, which returns one scalar loss:
+
+```text
+loss = sensitivity_loss + penalty
+```
+
+The `sensitivity_loss` compares the candidate detector's broadband strain-sensitivity curve to the Voyager reference detector on a log scale. Lower is better. Roughly, `0` means reference-level sensitivity, negative values mean better-than-reference sensitivity, and positive values mean worse sensitivity.
+
+The `penalty` comes from physical power constraints. During each evaluation, the simulator computes optical powers at constrained component groups and applies the active `power_penalty_fn(value, threshold)` wherever a threshold is exceeded. The default penalty is a squashed ReLU-style penalty, but constrained problems let you replace it before logging starts with `objective.set_penalty_fn(...)`.
+
+For scoring, feasibility still matters separately from the numeric penalty: only designs satisfying the physical power thresholds count as feasible. Use aux methods such as `objective.value_aux(params)` or save tokens such as `is_feasible`, `sensitivity_loss`, and `penalty` to inspect the loss decomposition. To build intuition, open the [interactive sensitivity loss explorer](../sensitivity_loss_explorer.html). See [Power Constraints and Aux Diagnostics](../dfbench_overview.md#power-constraints-and-aux-diagnostics) and [`UIFOProblem`](Problems.md#uifoproblem) for details.
+
 ### My gradient method diverges to NaN
 
 1. **Learning rate too high.** Differometor loss landscapes are steep. Start with `lr=0.01` or lower.
@@ -21,7 +35,7 @@
 | Gradient-based | Either | Use `True` if you want smooth unconstrained space for gradient flow. Use `False` if your method handles box constraints directly. |
 | Generative | Either | Depends on internal representation. |
 
-**Note:** The `Benchmark` harness defaults gradient-based algorithms to `unbounded=True` for convenience, but this can be overridden if your algorithm works in bounded space.
+**Note:** The `Benchmark` harness defaults gradient-based algorithms to `unbounded=True` for convenience, but this can be overridden if your algorithm works in bounded space; see the [bounded/unbounded guide](Implementing-a-New-Algorithm.md#bounded-vs-unbounded-detailed-guide).
 
 ### How do I convert between bounded and unbounded parameters?
 
@@ -44,7 +58,7 @@ losses = obj.vmap_value(params_jax)
 losses_torch = j2t(losses)            # JAX -> PyTorch
 ```
 
-The conversion goes through NumPy and adds negligible overhead.
+The conversion goes through NumPy and adds negligible overhead; see [tensor conversion helpers](Utilities-and-Helpers.md#tensor-conversion-t2j-j2t).
 
 ---
 
@@ -56,7 +70,7 @@ At least 30 for basic statistics, 100+ for reliable confidence intervals. The de
 
 ### Can I re-evaluate metrics without re-running?
 
-Yes. Save run data with `save_run_data=True`, then reload with different settings:
+Yes. Save run data with `save_run_data=True`, then reload with different settings; see [Benchmark orchestration](Architecture-Overview.md#benchmark-orchestration):
 
 ```python
 benchmark = Benchmark(problem, success_loss=0.05, ..., n_runs=100, max_time=300)
@@ -107,7 +121,7 @@ Use SLURM's `--gres=gpu:1` to isolate GPU access, or set `CUDA_VISIBLE_DEVICES` 
 
 ### `Objective.save_run_data()` vs. benchmark saving
 
-`Objective.save_run_data()` saves a single run (for development/debugging). The benchmark's `save_run_data` flag saves all runs for all algorithms in a structured directory with metadata for later re-evaluation.
+[`Objective.save_run_data()`](Objective-API-Reference.md#io-methods) saves a single run (for development/debugging). The benchmark's `save_run_data` flag saves all runs for all algorithms in a structured directory with metadata for later re-evaluation.
 
 ### Legacy data format
 
