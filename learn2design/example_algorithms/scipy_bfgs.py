@@ -1,8 +1,7 @@
 """Standalone SciPy BFGS optimizer.
 
-Optimizes in the Objective's unbounded (sigmoid-space) parameterization, so
-box bounds from the underlying problem are not passed to SciPy. Includes an
-adapter that logs every evaluation through the Objective for fair budget
+Optimizes in the Objective's unbounded (sigmoid-space) parameterization.
+Includes an adapter that logs every evaluation through the Objective for fair budget
 accounting, plus a restart strategy (alternating perturbed-best and random
 restarts) for budget remaining after BFGS converges.
 
@@ -77,22 +76,11 @@ class SciPyObjectiveAdapter:
 
     @property
     def constraints(self) -> tuple:
-        """Return supported SciPy constraints or fail loudly."""
-        problem = self.obj.problem
-        for attr_name in (
-            "scipy_constraints",
-            "constraints",
-            "linear_constraints",
-            "nonlinear_constraints",
-        ):
-            if not hasattr(problem, attr_name):
-                continue
-            value = getattr(problem, attr_name)
-            if value not in (None, (), [], {}):
-                raise NotImplementedError(
-                    "Problem exposes constraint metadata via "
-                    f"'{attr_name}', but this batch only supports box constraints."
-                )
+        """Return supported SciPy constraints.
+
+        This algorithm only supports box bounds; problems with constraint
+        metadata are not handled here. This is a placeholder.
+        """
         return ()
 
     def warmup(self) -> None:

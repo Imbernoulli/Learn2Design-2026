@@ -100,7 +100,6 @@ class MyAlgorithm(OptimizationAlgorithm):
         """
         # ─── 1. Setup references ───
         obj = objective
-        problem = obj.problem
 
         # Sets unbounded mode, algorithm_str, seeds np/JAX, returns resolved seed + JAX key
         random_seed, key = self.prepare(
@@ -118,7 +117,7 @@ class MyAlgorithm(OptimizationAlgorithm):
 
         # ─── 4. JIT warmup ───
         # This compiles the JAX computation graph. Do it BEFORE start_logging()
-        # so compilation time doesn't count against the 4-hour budget.
+        # so compilation time doesn't count against the time budget.
         obj.warmup_vmap_value(batch_size=self.batch_size)
 
         # ─── 5. Start logging (starts the clock) ───
@@ -181,13 +180,18 @@ The base class `OptimizationAlgorithm.optimize()` contains a commented blueprint
 
 ```python
 obj = objective
-problem = obj.problem
 random_seed, key = self.prepare(
     obj,
     unbounded=False,
     random_seed=random_seed,
 )
 ```
+
+The problem instance wrapped by the `Objective` is private. Use the public
+Objective API directly: `obj.bounds` for the `(2, n_params)` bounds,
+`obj.n_params` for the dimension, `obj.problem_name` for the display name,
+`obj.value_function(unbounded=False)` for the raw bounded objective, and
+`obj.penalty_fn` / `obj.power_thresholds` for the penalty contract.
 
 `prepare()` is called as `prepare(obj, unbounded, random_seed, algorithm_str=None, **kwargs)`. It sets `obj.unbounded`, `obj.algorithm_str`, seeds `np.random` and JAX, and returns `(random_seed, key)`. If `random_seed=None` is passed, a seed is generated via system entropy. You can also configure the Objective manually instead of calling `prepare()`.
 
@@ -229,7 +233,7 @@ obj.warmup_value_and_grad()              # when using gradients
 obj.warmup_vmap_value(batch_size=100)    # for batched methods (match your batch size)
 ```
 
-Warmup can take seconds because it triggers JAX compilation. Do this **before** `start_logging()` so the compilation time is not counted against the 4-hour budget. The `warmup_*()` helpers use deterministic params internally and run the corresponding path twice. Single-point helpers take no arguments; batched helpers take the batch size used by your algorithm.
+Warmup can take seconds because it triggers JAX compilation. Do this **before** `start_logging()` so the compilation time is not counted against the time budget. The `warmup_*()` helpers use deterministic params internally and run the corresponding path twice. Single-point helpers take no arguments; batched helpers take the batch size used by your algorithm.
 
 ### 5. Start logging
 
@@ -237,7 +241,7 @@ Warmup can take seconds because it triggers JAX compilation. Do this **before** 
 obj.start_logging()
 ```
 
-This starts Objective logging and the 4-hour wall-clock timer. Warmup before this line is free; work after this line is timed.
+This starts the wall-clock timer. Everything before this line is only warmup. Everything after is timed. After exhaustion, nothing is logged.
 
 ### 6. Main loop
 
@@ -257,7 +261,7 @@ while not obj.budget_exceeded:
 
 ## Choosing the Right Evaluation Method
 
-See the [Objective API Reference](Objective-API-Reference.md#evaluation-methods) for the full method contract.
+See the Objective API Reference for the full method contract.
 
 | Method | When to use | Logs |
 |--------|-------------|------|
@@ -390,7 +394,7 @@ losses_jax = obj.vmap_value(params_jax)
 losses_torch = j2t(losses_jax)
 ```
 
-The conversion goes through NumPy and adds negligible overhead relative to evaluation time; see [tensor conversion helpers](Utilities-and-Helpers.md#tensor-conversion-t2j-j2t).
+The conversion goes through NumPy and adds negligible overhead relative to evaluation time.
 
 ### JAX-based libraries (Optax)
 
