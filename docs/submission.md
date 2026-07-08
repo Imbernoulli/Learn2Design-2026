@@ -12,6 +12,9 @@ Competition entries are not submitted as public pull requests. This keeps
 unreleased methods private until the organizers evaluate them, which reduces
 copying between participants.
 
+You may submit as often as you want. For each monthly evaluation, the organizers
+evaluate the last submission received before that month's deadline.
+
 If you need extra Python packages installed into the eval environment, ship a
 `requirements.txt` next to your `.py` file. If you need to bundle weights or
 data files, place them in the same directory and load them by relative path;
@@ -50,7 +53,7 @@ wall-clock time per topology. Concretely:
   30 minutes of cumulative non-evaluation time.
 - Once the 4-hour evaluation budget is exhausted, `objective.budget_exceeded`
   becomes `True`. Further calls to `objective.value` return immediately
-  without re-evaluating; the previous best loss is what counts.
+  without re-evaluating; the best feasible loss found so far is what counts.
 - The container is then given a 10-minute grace period to terminate
   cleanly. After that, the entire process group is killed with `SIGKILL`.
 
@@ -83,11 +86,11 @@ the eval environment before running you.
 1. Your submission is placed in an isolated Docker container with no
    network access. The filesystem is writable; the container is ephemeral
    and discarded after the run, so anything you write is gone afterwards.
-2. For each of the 10 topologies, your `optimize()` is called once with a
+2. For each evaluation, your submission is run on 10 new hidden topologies. For each topology, your `optimize()` is called once with a
    fresh [`Objective`](dfbench/Objective-API-Reference.md), a fixed random seed, and the budget described above.
-3. After the run, the best loss recorded in [`objective.best_loss`](dfbench/Objective-API-Reference.md#best-results) is the
-   result for that topology.
-4. Your score for the month is the mean of the 10 best-loss values.
+3. After the run, the result for that topology is the minimum loss among logged setups with `is_feasible=True`.
+4. If your run has no feasible setup, that topology result is replaced by the best feasible loss from the organizers' random-search baseline on the same topology.
+5. Your score for the month is the arithmetic mean of the 10 topology results.
 
 ---
 

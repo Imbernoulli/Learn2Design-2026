@@ -86,11 +86,13 @@ as the starting point for describing each team's method in this joint analysis.
 ## How it works
 
 - You submit your optimization algorithm.
-- We run it on 10 held-out (hidden) topologies, every topology run gets 4 hours of wall-clock time on a single A100 GPU with 
+- You can submit as often as you want; for each monthly evaluation we use the last submission before that month's deadline.
+- Each evaluation runs it on 10 new held-out hidden topologies, every topology run gets 4 hours of wall-clock time on a single A100 GPU with
   an AMD EPYC 7302 CPU.
-- The best sensitivity (conditioned on [satisfying all constraints](docs/dfbench_overview.md#power-constraints-and-aux-diagnostics)) will be recorded for each of the 10 runs.
-- The average best sensitivity over the 10 4h runs will be used to score your submission. Lower is better.
-- Your score will get published to that monthly leaderboard and will be used for your final evaluation.
+- The best loss among setups [satisfying all constraints](docs/dfbench_overview.md#power-constraints-and-aux-diagnostics) will be recorded for each of the 10 runs.
+- If a run has no constraint-satisfying setup, we use the best constraint-satisfying loss from random search on that topology instead.
+- The arithmetic mean over the 10 recorded losses is your score. Lower is better.
+- Your public score is published to the monthly leaderboard; the final evaluation uses its own private hidden topologies.
 
 A "[topology](docs/dfbench_overview.md#explanation-of-topology)" fixes the choice of optical components for an experimental ansatz; you only optimize
 the continuous parameters attached to it. These could be laser power, mirror 
@@ -221,7 +223,7 @@ Each component has parameters that can be optimized within certain
 For the topology string format, component-code mapping, and ways to instantiate
 UIFO topologies directly, see [Explanation of "Topology"](docs/dfbench_overview.md#explanation-of-topology).
 
-The goal is to find algorithms that work well on any UIFO topology sampled from this search space, two examples topologies are visualized in the figure below. Each evaluation will run on its own 10 hidden topologies.
+The goal is to find algorithms that work well on any UIFO topology sampled from this search space; two example topologies are visualized in the figure below. Each evaluation runs on its own 10 hidden topologies.
 
 <p align="center">
   <img src="media/UIFO.png" alt="Quasi-Universal Interferometer (UIFO)" width="720">
@@ -363,7 +365,7 @@ Information about how to submit will be provided roughly on July 20th 2026.
 |---|---|
 | Expected: 08.07.2026 | Start of competition |
 | Expected: 20.07.2026 | Submission Platform opens |
-| 1st week of August, September, October | Release of public leaderboard |
+| 1st week of August, September, October | Release of public leaderboard from the latest submission before each monthly deadline |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
 

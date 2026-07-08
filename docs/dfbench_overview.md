@@ -63,7 +63,7 @@ A quick summary of the methods you'll touch most often. Data logging is done aut
 
 | Attribute | Purpose |
 |---|---|
-| `objective.best_loss` | Lowest loss observed (`None` before the first eval). |
+| `objective.best_loss` | Lowest raw loss observed (`None` before the first eval); not necessarily the scoring value. |
 | `objective.best_params_bounded` | Best params mapped to bounded space. Use this for final output. |
 | `objective.best_params`, `best_eval_index`, `best_batch_index` | Best params (raw space), and where in history it lives. |
 | `objective.best_is_feasible` | Physical feasibility of the best-loss point (needs `is_feasible` save token; constrained problems). |
@@ -237,7 +237,7 @@ A note on the grid: horizontal and vertical inter-cell spaces at the same grid p
 
 ## What to train/test your algorithm on?
 
-The problem you are scored on is `UIFOProblem` which has ~200 parameters (depending on topology). On an A100 a single evaluation takes roughly 500 ms once JIT is warm.
+The problem you are scored on is `UIFOProblem` which has ~200 parameters (depending on topology). Each evaluation uses 10 new hidden topologies, with 4 hours per topology. On an A100 a single evaluation takes roughly 500 ms once JIT is warm.
 
 For development there is a smaller problem that uses the same loss computation: `ConstrainedVoyagerProblem`. It is the aLIGO Voyager design, roughly 25 components, and it uses the same three noise sources and the same power-constraint penalty (i.e. the same loss function) as the UIFO. There are just fewer components. It takes roughly 20x less time per evaluation than the UIFO on the same hardware (around 25 ms/eval on an A100). You can use it to speed up the evaluation loop and get a better feel for your algorithm.
 
@@ -265,7 +265,7 @@ The UIFO loss is not just composed of points on the sensitivity curve. It also p
 
 For a browser-based intuition builder, open the [interactive sensitivity loss explorer](sensitivity_loss_explorer.html).
 
-The optimization is subject to the penalty being zero! This corresponds to the below boolean `is_feasible`. For the optimization, only the best feasible loss per run is counted towards the score. You are allowed (and also encouraged) to modify the pentalty function to fit your algorithm best but the resulting loss is only relevant to the score inisde the feasible regime.
+The optimization is subject to physical feasibility. This corresponds to the boolean `is_feasible` below. For scoring, only the minimum loss among feasible setups in each run counts. If a run contains no feasible setup, the organizers replace that topology result with the best feasible loss found by random search on the same topology. You are allowed, and encouraged, to modify the penalty function to fit your algorithm best, but the resulting loss is only relevant to the score inside the feasible regime.
 
 ### The penalty term
 
@@ -429,4 +429,4 @@ obj.best_is_feasible     # True/False/None (None if is_feasible was never enable
 
 ### Use during evaluation
 
-For the competition, we will log is_feasible together with the loss and parameters during evaluation. If the algorithm is using vmap, all three tokens are batched to preserve information about all poitns evaluated (the best loss does not need to be a feasible point).
+For the competition, we will log `is_feasible` together with the loss and parameters during evaluation. If the algorithm is using `vmap`, all three tokens are batched to preserve information about all points evaluated. The raw `objective.best_loss` does not need to be feasible; scoring uses the best logged feasible setup, with the random-search replacement rule if none exists.

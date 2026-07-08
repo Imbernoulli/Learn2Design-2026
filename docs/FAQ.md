@@ -84,7 +84,7 @@ We checked for common issues that can cause NaN or Inf values. These should not 
 ## Evaluation & Benchmarking
 
 ### How will my algorithm be evaluated and ranked?
-Algorithms will be [ranked](scoring.md) by their average performance on 10 hidden topologies evaluated by the organizers. The underlying discrete topology space contains over 500 million possible choices. For the final evaluation, each algorithm will be run for 4 hours on a single NVIDIA A100 GPU per hidden topology.
+Algorithms will be [ranked](scoring.md) by their arithmetic mean performance on 10 new hidden topologies per evaluation. You may submit as often as you want; each monthly evaluation uses the last submission before that month's deadline. For each topology, the score uses the minimum loss among setups with `is_feasible=True` during the 4-hour run. If a run has no feasible setup, that topology result is replaced by the best feasible loss from the organizers' random-search baseline on the same topology.
 
 ### Why is the budget measured in wall-clock time instead of iterations?
 Different algorithms have vastly different per-evaluation computational costs. Parallelizing over VMAP batches can further amplify these differences. Measuring by wall-clock time ensures a fair comparison of what can be achieved within a fixed compute budget. This exact metric also reflects real-world constraints.
