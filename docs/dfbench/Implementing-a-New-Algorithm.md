@@ -2,6 +2,8 @@
 
 This is the primary guide for contributors adding a new optimization algorithm to dfbench. The framework is designed to make this as painless as possible: you write the optimization logic, `Objective` handles everything else.
 
+> **Note:** This page is only for **dfbench contributors**. For the Learn2Design-2026 competition, you do **not** need to contribute your own algorithm to the main dfbench repository. Competition participants should follow [docs/submission.md](../submission.md) instead.
+
 ---
 
 ## The Contract

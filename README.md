@@ -145,7 +145,7 @@ If you are new to the challenge, we recommend starting with the lighter `Constra
 ```python
 from dfbench.problems import ConstrainedVoyagerProblem
 from dfbench import Objective
-from learn2design.example_algorithms import MyAlgorithm
+from learn2design.example_algorithms import MyAlgorithm  # Replace with your own algorithm or one of the examples
 
 problem = ConstrainedVoyagerProblem()
 objective = Objective(problem, max_time=2*60)  # 2 Minutes of optimization
@@ -166,7 +166,7 @@ To see an example of execution on the full problem, look at scripts like [`uifo_
 ```python
 from dfbench.problems import UIFOProblem
 from dfbench import Objective
-from learn2design.example_algorithms import MyAlgorithm
+from learn2design.example_algorithms import MyAlgorithm  # Replace with your own algorithm or one of the examples
 
 problem = UIFOProblem(topology_seed=42)  # Random topology with seed 42
 objective = Objective(problem, max_time=10*60)  # 10 Minutes of optimization
