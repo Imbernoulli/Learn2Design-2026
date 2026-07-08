@@ -12,7 +12,7 @@ obj = Objective(
     problem,
     verbose=1,
     max_time= 60*60*4,  # 4 hours
-    print_every=1,
+    print_every=5,
     save_params_history=True,
     save_to_file_every=100,
     display_mode="log",  # Use "live" for a live display on a local machine

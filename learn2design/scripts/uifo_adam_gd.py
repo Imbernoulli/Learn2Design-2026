@@ -13,7 +13,7 @@ obj = Objective(
     problem,
     verbose=1,
     max_time= 60*60*4,  # 4 hours
-    print_every=20,  # Adapt this to your needs (per n evaluations)
+    print_every=5,  # Adapt this to your needs (per n evaluations)
     save_params_history=True,
     save_to_file_every=100,
     display_mode="log",  # Use "live" for a live display on an interactive terminal
