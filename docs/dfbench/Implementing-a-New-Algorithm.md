@@ -118,7 +118,7 @@ class MyAlgorithm(OptimizationAlgorithm):
 
         # ─── 4. JIT warmup ───
         # This compiles the JAX computation graph. Do it BEFORE start_logging()
-        # so compilation time doesn't count against the time budget.
+        # so compilation time doesn't count against the official budget.
         obj.warmup_vmap_value(batch_size=self.batch_size)
 
         # ─── 5. Start logging (starts the clock) ───
@@ -229,7 +229,7 @@ obj.warmup_value_and_grad()              # when using gradients
 obj.warmup_vmap_value(batch_size=100)    # for batched methods (match your batch size)
 ```
 
-Warmup can take seconds because it triggers JAX compilation. Do this **before** `start_logging()` so the compilation time is not counted against the time budget. The `warmup_*()` helpers use deterministic params internally and run the corresponding path twice. Single-point helpers take no arguments; batched helpers take the batch size used by your algorithm.
+Warmup can take seconds because it triggers JAX compilation. Do this **before** `start_logging()` so the compilation time is not counted against the official budget. The `warmup_*()` helpers use deterministic params internally and run the corresponding path twice. Single-point helpers take no arguments; batched helpers take the batch size used by your algorithm.
 
 ### 5. Start logging
 
@@ -237,7 +237,7 @@ Warmup can take seconds because it triggers JAX compilation. Do this **before** 
 obj.start_logging()
 ```
 
-This starts the wall-clock timer. Everything before this line is "free" (warmup). Everything after is timed.
+This starts Objective logging and the simulator-evaluation timer. Warmup before this line is free; work after this line is subject to the official evaluation and overhead budgets.
 
 ### 6. Main loop
 

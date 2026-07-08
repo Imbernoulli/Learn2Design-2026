@@ -41,24 +41,26 @@ What you may **not** do with the dataset:
 
 ## Time budget
 
-The budget is 4 hours of [`Objective.value`](dfbench/Objective-API-Reference.md#single-point-evaluation) / [`Objective.value_and_grad`](dfbench/Objective-API-Reference.md#single-point-evaluation)
-wall-clock time per topology. Concretely:
+Official budget per topology: 4 hours of simulator-evaluation time after
+`objective.start_logging()`, plus 30 minutes of non-evaluation overhead and a
+10-minute shutdown grace period. Total hard wall-clock cap per topology: 4 h 40 min.
 
-- The clock starts on the first call after `objective.start_logging()`.
-- Anything done inside `objective.value(...)` or
-  `objective.value_and_grad(...)` counts toward the 4 hours.
-- Anything done outside those calls (your own update logic, surrogate
-  inference, CMA-ES adaptation, gradient clipping, ...) does not count
-  toward the 4 hours, but is bounded by a separate overhead budget of
-  30 minutes of cumulative non-evaluation time.
+Concretely:
+
+- The simulator-evaluation clock starts on the first Objective evaluation call after `objective.start_logging()`.
+- Anything done inside Objective evaluation calls, such as
+  [`objective.value(...)`](dfbench/Objective-API-Reference.md#single-point-evaluation),
+  [`objective.value_and_grad(...)`](dfbench/Objective-API-Reference.md#single-point-evaluation),
+  or their batched / `vmap_*` variants, counts toward the 4 hours.
+- Algorithm work outside those calls, such as optimizer updates, surrogate
+  inference, candidate generation, CMA-ES adaptation, gradient clipping, or
+  submission-side logging, does not count toward the 4 hours, but is bounded by
+  30 minutes of cumulative non-evaluation overhead.
 - Once the 4-hour evaluation budget is exhausted, `objective.budget_exceeded`
   becomes `True`. Further calls to `objective.value` return immediately
   without re-evaluating; the best feasible loss found so far is what counts.
 - The container is then given a 10-minute grace period to terminate
   cleanly. After that, the entire process group is killed with `SIGKILL`.
-
-Total hard wall-clock cap per topology: 4 h evaluation + 30 min overhead +
-10 min grace = 4 h 40 min.
 
 JIT compilation time (any call before `objective.start_logging()`) is **not**
 counted against any of these budgets.
