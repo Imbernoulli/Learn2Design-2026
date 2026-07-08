@@ -303,7 +303,7 @@ For algorithms with custom JIT-compiled evaluation loops that use `obj.value_fun
 
 ### `start_logging()`
 
-Starts the wall-clock timer. **Must be called after JIT warmup and before the optimization loop.** All `time_steps` and budget checks are relative to this moment.
+Starts Objective logging and the wall-clock timer. **Must be called after JIT warmup and before the optimization loop.** All `time_steps` and budget checks are relative to this moment.
 
 ```python
 # Typical sequence
