@@ -318,7 +318,7 @@ The dict has this shape:
 | `sensitivity_loss` | scalar | The unpenalised sensitivity loss. This is what you would get with `zero_penalty`. |
 | `penalty` | scalar | The summed penalty contribution at this point. |
 | `is_feasible` | scalar bool | `True` iff every per-group power is at or below its threshold. This is a physical check, independent of the active `power_penalty_fn`, so it stays meaningful even when the penalty is disabled with `zero_penalty`. |
-| `violations` | `(n_constraints, n_freq)` | Per-constraint penalty values. |
+| `violations` | `(n_constraints,)` | Per-constraint penalty values. |
 | `power_values` | dict with `hard`, `soft`, `detector` leaves | Raw per-group power arrays. |
 
 Because `aux` is a JAX pytree, the batched variants add a leading batch dim to every leaf, including the `power_values` sub-arrays. The gradient returned by `value_and_grad_aux` is taken with respect to the loss (including penalty).

@@ -104,8 +104,7 @@ Your algorithm is allowed to evaluate the objective in batches via `jax.vmap` (t
 A submission is one class subclassing `OptimizationAlgorithm`:
 
 ```python
-from dfbench import Objective
-from dfbench.core.algorithm import OptimizationAlgorithm
+from dfbench import Objective, OptimizationAlgorithm
 from jaxtyping import Array, Float
 
 
@@ -243,6 +242,7 @@ learn2design/
 └── scripts/             # Minimal runnable entry points
 
 docs/
+├── dfbench_overview.md  # Overview of the functionality you need
 ├── submission.md        # Submission rules
 ├── scoring.md           # Scoring and leaderboard details
 ├── FAQ.md               # Competition FAQ
@@ -252,9 +252,6 @@ docs/
     ├── Problems.md
     ├── Algorithms.md
     ├── Implementing-a-New-Algorithm.md   # step-by-step guide for new algorithms
-    ├── Benchmarking.md
-    ├── Metrics-Reference.md
-    ├── Storage-and-Checkpointing.md      # organizer-facing checkpoint docs
     ├── Utilities-and-Helpers.md
     └── FAQ.md
 
@@ -263,12 +260,6 @@ dataset/
 ├── dataset_dashboard.html
 ├── README.md
 └── examples/            # Loading, evaluation, and visualization examples
-
-baselines/
-├── evolutionary/
-├── generative/
-├── gradient_based/
-└── surrogate_based/
 ```
 
 </details>
@@ -299,10 +290,10 @@ A loss of zero means that the optimizer has discovered the best known human desi
 |---|---|---|---|---|
 | 1. `AdamGD` | Gradient-based | Standard Adam optimizer utilizing gradient clipping for stability | 1.1 ± 0.3 | [AdamGD](learn2design/example_algorithms/adam_gd.py) |
 | 2. `NAAdamGD` | Gradient-based | Adam optimizer enhanced with decaying Gaussian noise to escape local optima | 1.2 ± 0.4 | [NAAdamGD](learn2design/example_algorithms/na_adam_gd.py) |
-| 3. `SAGD` | Gradient-based | Escapes local minima via stochastic ascent | | [SAGD](learn2design/example_algorithms/sa_gd.py) |
-| 4. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](learn2design/example_algorithms/lbfgs_gd.py) |
-| 5. `JAXOnePlusOneES` | Evolutionary | (1+1)-ES with 1/5 rule, native JAX | | [JAXOnePlusOneES](learn2design/example_algorithms/jax_one_plus_one_es.py) |
-| 6. `JAXMuLambdaES` | Evolutionary | (μ,λ)-ES with truncation selection, native JAX | | [JAXMuLambdaES](learn2design/example_algorithms/jax_mu_lambda_es.py)|
+| 3. `OptaxSGDM` | Gradient-based | Stochastic Gradient Descent (SGD) with momentum, implemented via Optax | 1.2 ± 0.4 | [OptaxSGDM](learn2design/example_algorithms/optax_sgdm.py) |
+| 4. `BFGS` | Gradient-based | BFGS quasi-Newton method (SciPy) for gradient-based optimization | 1.8 ± 0.2 | [BFGS](learn2design/example_algorithms/scipy_bfgs.py) |
+| 5. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](learn2design/example_algorithms/lbfgs_gd.py) |
+| 6. `PyCMACMAES` | Evolutionary | Vanilla CMA-ES (pycma) searching in the unit cube, mapped to physical bounds at evaluation | 4.1 ± 0.1 | [PyCMACMAES](learn2design/example_algorithms/pycma_cmaes.py) |
 | 7. `RandomSearch` | Global Search | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](learn2design/example_algorithms/random_search.py) |
 
 
@@ -340,9 +331,9 @@ opens.
 
 
 > [!TIP]
-> * Take a look at the [FAQs](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/docs/FAQ.md) which might help answer any further questions regarding Learn2Design-2026.
+> * [docs/dfbench_overview](docs/dfbench_overview.md) gives a brief overview of alle the functionality provided by the Objective and the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package in general.
 > * Check out [Submission](docs/submission.md) and [Scoring](docs/scoring.md) for further details on the submission system and scoring criteria we use in this competition, respectively.
-> * [docs/dfbench_overview](docs/dfbench_overview.md) provides a brief overview of the technical details of the [dfbench](https://github.com/artificial-scientist-lab/Differometor-Benchmark) package.
+> * Take a look at the [FAQs](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/docs/FAQ.md) which might help answer any further questions regarding Learn2Design-2026.
 > * [docs/dfbench](docs/dfbench/) includes a comprehensive documentation of the __dfbench__ package.  
 
 

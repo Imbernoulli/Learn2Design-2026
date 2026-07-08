@@ -1,12 +1,11 @@
 # Reference: https://github.com/artificial-scientist-lab/Differometor-Benchmark/blob/main/src/dfbench/algorithms/evolutionary/random_search.py
 from jaxtyping import Array, Float
 
-from dfbench.core.algorithm import OptimizationAlgorithm
-from dfbench.core.objective import Objective
+from dfbench import Objective, OptimizationAlgorithm
 
 
 class RandomSearch(OptimizationAlgorithm):
-    """Uniform random sampling within bounds. See reference link above for full docs."""
+    """Uniform random sampling within the problem bounds (batched evaluation)."""
 
     algorithm_str = "random_search"
 
@@ -20,10 +19,14 @@ class RandomSearch(OptimizationAlgorithm):
         random_seed: int | None = None,
     ) -> None:
         obj = objective
+        # Random search operates directly in bounded physical space.
         self.prepare(obj, unbounded=False, random_seed=random_seed)
 
         obj.warmup_value()
         obj.start_logging()
 
+        # Repeatedly draw random params from the active (bounded) space and
+        # evaluate them until the budget is exhausted. Each `obj.value()` call
+        # is automatically logged.
         while not obj.budget_exceeded:
             obj.value(obj.random_params())

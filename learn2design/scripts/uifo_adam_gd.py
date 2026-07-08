@@ -7,15 +7,16 @@ from learn2design.example_algorithms import AdamGD
 
 SEED = 42
 
-problem = UIFOProblem(topology_seed=SEED)  # Create UIFO instance with a random topology
+# Create UIFO instance with a random topology
+problem = UIFOProblem(topology_seed=SEED)  # Optionally try ConstrainedVoyagerProblem for a more lightweight similar problem
 obj = Objective(
     problem,
     verbose=1,
     max_time= 60*60*4,  # 4 hours
-    print_every=1,
+    print_every=20,  # Adapt this to your needs (per n evaluations)
     save_params_history=True,
     save_to_file_every=100,
-    display_mode="log",  # Use "live" for a live display on a local machine
+    display_mode="log",  # Use "live" for a live display on an interactive terminal
 )
 
 optimizer = AdamGD()
@@ -28,7 +29,10 @@ optimizer.optimize(
     random_seed=SEED,  # This is only for random param generation in AdamGD
 )
 
-obj.save_run_data()
+# Save run data
+obj.save_run_data(hyper_param_str="lr0.1")  # Optional hyperparameter string will be included in the filename
+# Output loss plot, sensitivity plot, final parameters(JSON), and loss history(JSON) which can be toggled by arguments
+obj.output_to_files(hyper_param_str="lr0.1")   
 
 print("Best loss:")
 print(f"    {obj.best_loss:.6f}")
