@@ -136,6 +136,10 @@ That is the entire contract. The `Objective` handles seeding, history,
 checkpointing, and budget enforcement. You write the loop. Execution examples of such classes are provided in [`learn2design/scripts/`](learn2design/scripts/) and below.
 
 ### 1. Test with Constrained Voyager (Fast)
+<details>
+<summary> How to execute </summary>
+
+<br>
 If you are new to the challenge, we recommend starting with the lighter `ConstrainedVoyagerProblem` (look at the script [`cvoyager_adam_gd.py`](learn2design/scripts/cvoyager_adam_gd.py) for an execution example). It uses the exact same `Objective` API and loss calculation but is a smaller, faster problem, making it great for quickly testing your optimization loop or getting a feel for the performance:
 
 ```python
@@ -149,8 +153,12 @@ objective = Objective(problem, max_time=2*60)  # 2 Minutes of optimization
 optimizer = MyAlgorithm()
 optimizer.optimize(objective)
 ```
+</details>
 
 ### 2. Scale up to UIFO (The Competition Target)
+<details>
+<summary> How to execute </summary>
+<br>
 The `UIFOProblem` is the actual target of this competition. Once your algorithm runs successfully on the smaller problem, scale it up to the Quasi-Universal Interferometer (UIFO).
 
 To see an example of execution on the full problem, look at scripts like [`uifo_random_search.py`](learn2design/scripts/uifo_random_search.py) or [`uifo_adam_gd.py`](learn2design/scripts/uifo_adam_gd.py). The execution looks like this:
@@ -166,6 +174,9 @@ objective = Objective(problem, max_time=10*60)  # 10 Minutes of optimization
 optimizer = MyAlgorithm()
 optimizer.optimize(objective)
 ```
+</details>
+
+<br>
 
 You can find most functionality of the Objective API at [`docs/dfbench_overview.md`](docs/dfbench_overview.md).
 
