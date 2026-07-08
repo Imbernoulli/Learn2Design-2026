@@ -39,7 +39,9 @@ Algorithms will be ranked by their hidden-evaluation performance, with **EUR 25,
 Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific question:
 **Can AI systems discover scientific instruments that go beyond human intuition while remaining physically meaningful and experimentally constrained?**
 
-> **Status:** Pre-launch. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
+More Infos in the accepted proposal for [Learn2Design-2026](Learn2Design_details.pdf).
+
+> **Status:** Beta-Release. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
 > `dfbench` v0.2.0 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
 
 
