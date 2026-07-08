@@ -44,7 +44,7 @@ Objective(
 | `problem` | `ContinuousProblem` | *required* | The optimization problem to wrap. |
 | `unbounded` | `bool` | `False` | If `True`, the Objective maps unbounded parameters into problem bounds before evaluating `objective_function`, so algorithms can search in $(-\infty, +\infty)^\text{n\_params}$ space. If `False`, evaluates `objective_function` directly in bounded space. |
 | `max_evals` | `int \| None` | `None` | Maximum number of function evaluations. `None` = unlimited. Batched evaluations are counted as how many parameters were given. |
-| `max_time` | `float \| None` | `None` | Maximum Objective-tracked seconds beginning at the time `obj.start_logging()` was called. `None` = unlimited. |
+| `max_time` | `float \| None` | `None` | Maximum wall-clock seconds beginning at the time `obj.start_logging()` was called. `None` = unlimited. |
 | `save_time_steps` | `bool` | `True` | Record elapsed-time timestamp for each evaluation. |
 | `save_params_history` | `bool` | `True` | Record the parameter vector at each evaluation. |
 | `save_batched_params_history` | `bool` | `False` | Store full `(batch, n_params)` parameter arrays for batched evals instead of the reduced representative point. |
@@ -303,12 +303,12 @@ For algorithms with custom JIT-compiled evaluation loops that use `obj.value_fun
 
 ### `start_logging()`
 
-Starts Objective logging and timing. **Must be called after JIT warmup and before the optimization loop.** All `time_steps` and Objective-side budget checks are relative to this moment.
+Starts Objective logging and the wall-clock timer. **Must be called after JIT warmup and before the optimization loop.** All `time_steps` and budget checks are relative to this moment.
 
 ```python
 # Typical sequence
 obj.warmup_value_and_grad()           # warmup
-obj.start_logging()                    # Objective logging/timing starts NOW
+obj.start_logging()                    # timer starts NOW
 while not obj.budget_exceeded:
     ...
 ```
@@ -457,7 +457,7 @@ bounded ≈ lb + (ub - lb) * forward(random_params_unbounded(...))
 |----------|------|-------------|
 | `eval_count` | `int` | Total evaluations so far. |
 | `max_evals` | `int \| None` | The evaluation budget, or `None` if unlimited. |
-| `max_time` | `float \| None` | The Objective-tracked time budget in seconds, or `None` if unlimited. |
+| `max_time` | `float \| None` | The wall-clock time budget in seconds, or `None` if unlimited. |
 | `evals_left` | `int \| None` | Remaining evaluation budget. `None` if unlimited. |
 | `evals_exceeded` | `bool` | Whether the evaluation cap has been reached. |
 | `evals_progress_fraction` | `float` | Fraction of eval budget consumed (0-1). |

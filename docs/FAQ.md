@@ -84,10 +84,10 @@ We checked for common issues that can cause NaN or Inf values. These should not 
 ## Evaluation & Benchmarking
 
 ### How will my algorithm be evaluated and ranked?
-Algorithms will be [ranked](scoring.md) by their arithmetic mean performance on 10 new hidden topologies per evaluation. You may submit as often as you want; each monthly evaluation uses the last submission before that month's deadline. For each topology, the score uses the minimum loss among setups with `is_feasible=True` during the 4-hour simulator-evaluation budget. If a run has no feasible setup, that topology result is replaced by the best feasible loss from the organizers' random-search baseline on the same topology.
+Algorithms will be [ranked](scoring.md) by their arithmetic mean performance on 10 new hidden topologies per evaluation. You may submit as often as you want; each monthly evaluation uses the last submission before that month's deadline. For each topology, the score uses the minimum loss among setups with `is_feasible=True` during the 4-hour wall-clock budget after `objective.start_logging()`. If a run has no feasible setup, that topology result is replaced by the best feasible loss from the organizers' random-search baseline on the same topology.
 
-### Why is the evaluation budget measured in wall-clock time instead of iterations?
-Different algorithms have vastly different per-evaluation computational costs. Parallelizing over VMAP batches can further amplify these differences. Measuring simulator-evaluation time by wall-clock duration ensures a fair comparison of what can be achieved within a fixed compute budget. Non-evaluation algorithm work is limited separately by the 30-minute overhead budget.
+### Why is the budget measured in wall-clock time instead of iterations?
+Different algorithms have vastly different per-evaluation computational costs. Parallelizing over VMAP batches can further amplify these differences. Measuring wall-clock time after `objective.start_logging()` ensures a fair comparison of what can be achieved within a fixed compute budget.
 
 ### What does the loss mean?
 

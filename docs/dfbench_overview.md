@@ -36,7 +36,7 @@ A quick summary of the methods you'll touch most often. Data logging is done aut
 | Method / attribute | Purpose |
 |---|---|
 | `objective.warmup_value()`, `warmup_value_and_grad()`, `warmup_vmap_*`, … | JIT-compile before the timer starts (free, not budgeted). Call before `start_logging()`. |
-| `objective.start_logging()` | Start official evaluation logging/timing; call after warmup. |
+| `objective.start_logging()` | Start the official 4-hour wall-clock timer; call after warmup. |
 | `objective.set_space_mode(unbounded, unit_mapping=None, inverse_unit_mapping=None)` | Switch bounded/unbounded space (and optionally the [0,1] mapping pair) before optimization. |
 | `objective.set_seed(seed)` | Seed the internal PRNG for reproducible `random_params*` draws. |
 | `objective.set_penalty_fn(fn)` | Swap the penalty function on constrained problems (`UIFOProblem`, …); retraces JIT paths. Use `relu_penalty`, `zero_penalty`, etc. |
@@ -56,7 +56,7 @@ A quick summary of the methods you'll touch most often. Data logging is done aut
 | `objective.budget_exceeded` | Main loop-termination check (time **or** evals exhausted). |
 | `objective.budget_left_fraction`, `budget_progress_fraction` | Fraction of the tightest active budget remaining / consumed. |
 | `objective.eval_count`, `evals_left`, `evals_exceeded` | Evaluation-counter view. |
-| `objective.time_elapsed`, `time_left`, `time_exceeded` | Objective evaluation-time view (relative to `start_logging()`). |
+| `objective.time_elapsed`, `time_left`, `time_exceeded` | Wall-clock view (relative to `start_logging()`). |
 | `objective.evals_since_improvement`, `improvement_count` | For patience-based early stopping. |
 
 ### Results & history
@@ -237,7 +237,7 @@ A note on the grid: horizontal and vertical inter-cell spaces at the same grid p
 
 ## What to train/test your algorithm on?
 
-The problem you are scored on is `UIFOProblem` which has ~200 parameters (depending on topology). Each evaluation uses 10 new hidden topologies. Official budget per topology is 4 hours of simulator-evaluation time after `objective.start_logging()`, plus 30 minutes of non-evaluation overhead and a 10-minute shutdown grace period. On an A100 a single evaluation takes roughly 500 ms once JIT is warm.
+The problem you are scored on is `UIFOProblem` which has ~200 parameters (depending on topology). Each evaluation uses 10 new hidden topologies. Official budget per topology is exactly 4 hours of wall-clock time after `objective.start_logging()`. On an A100 a single evaluation takes roughly 500 ms once JIT is warm.
 
 For development there is a smaller problem that uses the same loss computation: `ConstrainedVoyagerProblem`. It is the aLIGO Voyager design, roughly 25 components, and it uses the same three noise sources and the same power-constraint penalty (i.e. the same loss function) as the UIFO. There are just fewer components. It takes roughly 20x less time per evaluation than the UIFO on the same hardware (around 25 ms/eval on an A100). You can use it to speed up the evaluation loop and get a better feel for your algorithm.
 

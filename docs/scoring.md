@@ -3,7 +3,8 @@
 ## Per-run score
 
 For a single topology, your run's score is the best physically feasible
-(`is_feasible=True`) loss reached within the 4-hour simulator-evaluation budget:
+(`is_feasible=True`) loss reached within the 4-hour wall-clock budget after
+`objective.start_logging()`:
 
 $$
 s_{\text{run}} = \min_{t \in [0,\, T_{\text{budget}}],\;\mathrm{is\_feasible}(\theta_t)} \mathcal{L}(\theta_t)

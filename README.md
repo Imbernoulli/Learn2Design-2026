@@ -88,7 +88,7 @@ as the starting point for describing each team's method in this joint analysis.
 - You submit your optimization algorithm.
 - You can submit as often as you want; for each monthly evaluation we use the last submission before that month's deadline.
 - Each evaluation runs it on 10 new held-out hidden topologies on a single A100 GPU with an AMD EPYC 7302 CPU.
-- Official budget per topology: 4 hours of simulator-evaluation time after `objective.start_logging()`, plus 30 minutes of non-evaluation overhead and a 10-minute shutdown grace period. Total hard cap: 4 h 40 min.
+- Time budget per topology: exactly 4 hours of wall-clock time after `objective.start_logging()`.
 - The best loss among setups [satisfying all constraints](docs/dfbench_overview.md#power-constraints-and-aux-diagnostics) will be recorded for each of the 10 runs.
 - If a run has no constraint-satisfying setup, we use the best constraint-satisfying loss from random search on that topology instead.
 - The arithmetic mean over the 10 recorded losses is your score. Lower is better.

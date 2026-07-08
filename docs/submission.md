@@ -41,29 +41,31 @@ What you may **not** do with the dataset:
 
 ## Time budget
 
-Official budget per topology: 4 hours of simulator-evaluation time after
-`objective.start_logging()`, plus 30 minutes of non-evaluation overhead and a
-10-minute shutdown grace period. Total hard wall-clock cap per topology: 4 h 40 min.
+Official budget per topology: exactly 4 hours of wall-clock time after
+`objective.start_logging()`. JIT warmup before `objective.start_logging()` does
+not count.
+
+The full per-topology container runtime is capped at 4 h 30 min from the start
+of the participant run. This includes any work before `objective.start_logging()`
+and after the Objective budget is exhausted.
 
 Concretely:
 
-- The simulator-evaluation clock starts on the first Objective evaluation call after `objective.start_logging()`.
-- Anything done inside Objective evaluation calls, such as
-  [`objective.value(...)`](dfbench/Objective-API-Reference.md#single-point-evaluation),
-  [`objective.value_and_grad(...)`](dfbench/Objective-API-Reference.md#single-point-evaluation),
-  or their batched / `vmap_*` variants, counts toward the 4 hours.
-- Algorithm work outside those calls, such as optimizer updates, surrogate
-  inference, candidate generation, CMA-ES adaptation, gradient clipping, or
-  submission-side logging, does not count toward the 4 hours, but is bounded by
-  30 minutes of cumulative non-evaluation overhead.
-- Once the 4-hour evaluation budget is exhausted, `objective.budget_exceeded`
+- The clock starts when your algorithm calls `objective.start_logging()`.
+- Everything after that call counts toward the 4 hours, including Objective
+  evaluation calls, batched / `vmap_*` variants, optimizer updates, surrogate
+  inference, candidate generation, adaptation, and submission-side logging.
+- Once the 4-hour wall-clock budget is exhausted, `objective.budget_exceeded`
   becomes `True`. Further calls to `objective.value` return immediately
   without re-evaluating; the best feasible loss found so far is what counts.
-- The container is then given a 10-minute grace period to terminate
-  cleanly. After that, the entire process group is killed with `SIGKILL`.
-
-JIT compilation time (any call before `objective.start_logging()`) is **not**
-counted against any of these budgets.
+- JIT compilation time from warmup calls before `objective.start_logging()` is
+  **not** counted against the 4 hours.
+- Before calling `objective.start_logging()`, submissions may only perform setup
+  that is independent of the specific evaluation problem instance. They must not
+  use the provided `Objective`, its wrapped problem, topology, bounds, random
+  samples, losses, gradients, auxiliary diagnostics, or any derived information
+  to select, rank, train, adapt, filter, or otherwise improve candidate
+  solutions before logging starts.
 
 ---
 
@@ -108,5 +110,7 @@ used. Prize money is withheld until review is complete.
 ## Disqualification criteria
 
 - Encoding knowledge of private topology specifications in any form.
+- Using information from the provided evaluation `Objective` or problem instance
+  to improve candidate solutions before `objective.start_logging()`.
 - Submitting work that is not your own without attribution.
 - Violations of the [Code of Conduct](../CODE_OF_CONDUCT.md).
