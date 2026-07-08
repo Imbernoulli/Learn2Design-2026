@@ -99,7 +99,7 @@ reflectivity, grid distance, etc.
 Your algorithm is allowed to evaluate the objective in batches via `jax.vmap` (the `obj.vmap_*` methods). The whole batch runs in a single vmapped forward pass, which saves significant time per element opposed to looping single evals. This is encouraged for population-based methods (PSO, CMA-ES, evolutionary strategies) and any algorithm that naturally evaluates multiple candidates per step.
 
 
-## Minimal working example
+## Getting Started
 
 A submission is one class subclassing `OptimizationAlgorithm`:
 
@@ -133,9 +133,27 @@ class MyAlgorithm(OptimizationAlgorithm):
 ```
 
 That is the entire contract. The `Objective` handles seeding, history,
-checkpointing, and budget enforcement. You write the loop.
+checkpointing, and budget enforcement. You write the loop. Execution examples of such classes are provided in [`learn2design/scripts/`](learn2design/scripts/) and below.
 
-To see an example for execution, look at a script like [uifo_random_search.py](learn2design/scripts/uifo_random_search.py) or [uifo_adam_gd.py](learn2design/scripts/uifo_adam_gd.py). If you are new to the challenge, start with the lighter [ConstrainedVoyagerProblem](learn2design/scripts/cvoyager_adam_gd.py), a smaller, faster problem that uses the same `Objective` API and is great for quick experiments before tackling the full UIFO. The simplest form of execution looks like this:
+### 1. Test with Constrained Voyager (Fast)
+If you are new to the challenge, we recommend starting with the lighter `ConstrainedVoyagerProblem` (look at the script [`cvoyager_adam_gd.py`](learn2design/scripts/cvoyager_adam_gd.py) for an execution example). It uses the exact same `Objective` API and loss calculation but is a smaller, faster problem, making it great for quickly testing your optimization loop or getting a feel for the performance:
+
+```python
+from dfbench.problems import ConstrainedVoyagerProblem
+from dfbench import Objective
+from learn2design.example_algorithms import MyAlgorithm
+
+problem = ConstrainedVoyagerProblem()
+objective = Objective(problem, max_time=2*60)  # 2 Minutes of optimization
+
+optimizer = MyAlgorithm()
+optimizer.optimize(objective)
+```
+
+### 2. Scale up to UIFO (The Competition Target)
+The `UIFOProblem` is the actual target of this competition. Once your algorithm runs successfully on the smaller problem, scale it up to the Quasi-Universal Interferometer (UIFO).
+
+To see an example of execution on the full problem, look at scripts like [`uifo_random_search.py`](learn2design/scripts/uifo_random_search.py) or [`uifo_adam_gd.py`](learn2design/scripts/uifo_adam_gd.py). The execution looks like this:
 
 ```python
 from dfbench.problems import UIFOProblem
@@ -149,6 +167,7 @@ optimizer = MyAlgorithm()
 optimizer.optimize(objective)
 ```
 
+You can find most functionality of the Objective API at [`docs/dfbench_overview.md`](docs/dfbench_overview.md).
 
 ## Install
 
