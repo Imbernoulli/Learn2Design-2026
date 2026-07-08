@@ -135,7 +135,7 @@ class MyAlgorithm(OptimizationAlgorithm):
 That is the entire contract. The `Objective` handles seeding, history,
 checkpointing, and budget enforcement. You write the loop.
 
-To see an example for execution, look at a script like [uifo_random_search.py](learn2design/scripts/uifo_random_search.py) or [uifo_adam_gd.py](learn2design/scripts/uifo_adam_gd.py). The simplest form of execution looks like this:
+To see an example for execution, look at a script like [uifo_random_search.py](learn2design/scripts/uifo_random_search.py) or [uifo_adam_gd.py](learn2design/scripts/uifo_adam_gd.py). If you are new to the challenge, start with the lighter [ConstrainedVoyagerProblem](learn2design/scripts/cvoyager_adam_gd.py), a smaller, faster problem that uses the same `Objective` API and is great for quick experiments before tackling the full UIFO. The simplest form of execution looks like this:
 
 ```python
 from dfbench.problems import UIFOProblem
@@ -238,8 +238,25 @@ The repository is organized around a small number of entry points:
 
 ```text
 learn2design/
-├── example_algorithms/  # Reference implementations
-└── scripts/             # Minimal runnable entry points
+├── example_algorithms/            # Reference implementations
+│   ├── __init__.py
+│   ├── adam_gd.py                 # Standard Adam optimizer
+│   ├── na_adam_gd.py              # Adam with decaying Gaussian noise
+│   ├── optax_sgdm.py              # SGD with momentum (Optax)
+│   ├── scipy_bfgs.py              # BFGS (SciPy)
+│   ├── lbfgs_gd.py                # L-BFGS (Optax)
+│   ├── random_search.py           # Uniform random search
+│   └── pycma_cmaes.py             # CMA-ES (pycma)
+└── scripts/                       # Minimal runnable entry points
+    ├── smoke_test.py              # Single-eval smoke test
+    ├── uifo_adam_gd.py            # UIFO + AdamGD
+    ├── uifo_na_adam_gd.py         # UIFO + NAAdamGD
+    ├── uifo_optax_sgdm.py         # UIFO + OptaxSGDM
+    ├── uifo_scipy_bfgs.py         # UIFO + BFGS
+    ├── uifo_lbfgs_gd.py           # UIFO + LBFGSGD
+    ├── uifo_random_search.py     # UIFO + RandomSearch
+    ├── uifo_pycma_cmaes.py       # UIFO + PyCMACMAES
+    └── cvoyager_adam_gd.py       # ConstrainedVoyager + AdamGD (lightweight)
 
 docs/
 ├── dfbench_overview.md  # Overview of the functionality you need
@@ -260,6 +277,10 @@ dataset/
 ├── dataset_dashboard.html
 ├── README.md
 └── examples/            # Loading, evaluation, and visualization examples
+    ├── dataset_utils.py
+    ├── load_entry.py
+    ├── evaluate_entry.py
+    └── visualize_entry.py
 ```
 
 </details>
