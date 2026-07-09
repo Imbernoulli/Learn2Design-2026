@@ -1,5 +1,3 @@
-> [!IMPORTANT]
-> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **9. July 2026**.
 
 # NeurIPS 2026 Challenge: Learn2Design-2026
 [![License](https://img.shields.io/github/license/artificial-scientist-lab/Learn2Design-2026)](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/LICENSE)
@@ -365,7 +363,7 @@ Information about how to submit will be provided roughly on July 20th 2026.
 
 | Date | Event |
 |---|---|
-| Expected: 08.07.2026 | Start of competition |
+| 09.07.2026 | Start of competition |
 | Expected: 20.07.2026 | Submission Platform opens |
 | 1st week of August, September, October | Release of public leaderboard from the latest submission before each monthly deadline |
 | 15.10.2026 | Final submission deadline |
