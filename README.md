@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **8.July 2026**.
+> **BETA RELEASE:** This repository is currently in beta. The official competition will start on **9. July 2026**.
 
 # NeurIPS 2026 Challenge: Learn2Design-2026
 [![License](https://img.shields.io/github/license/artificial-scientist-lab/Learn2Design-2026)](https://github.com/artificial-scientist-lab/Learn2Design-2026/blob/main/LICENSE)
