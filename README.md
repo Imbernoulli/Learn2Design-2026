@@ -4,7 +4,9 @@
 [![image](https://img.shields.io/pypi/pyversions/dfbench.svg)](https://pypi.python.org/pypi/dfbench)
 [![GitHub](https://img.shields.io/badge/GitHub-dfbench-3232c8?logo=github&logoColor=white)](https://github.com/artificial-scientist-lab/Differometor-Benchmark)
 
-
+<p align="center">
+  <img src="learn2design2026_with_neurips.jpg" alt="Learn2Design-2026 with NeurIPS" width="720">
+</p>
 
 ## A physics experiment design competition for gravitational-wave detectors
 
