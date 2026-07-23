@@ -366,9 +366,13 @@ Information about how to submit will be provided roughly on July 27th 2026.
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
 
+## Contact
+
+Whenever possible, we recommend communicating with the organizers via GitHub issues so that other participants with similar questions can also see the solutions. If your question cannot be discussed publicly, please contact [Jonathan](mailto:jonathan@feyer.ai), [Priya](mailto:shanmugapriya.kanagasabapathi@uni-tuebingen.de), [Soham](mailto:soham.basu@uni-tuebingen.de), or [Mario](mailto:mario.krenn@uni-tuebingen.de).
 
 ## Resources
 
+- **Website:** <https://www.learn2design2026.com/>
 - **Repository:** <https://github.com/artificial-scientist-lab/Learn2Design-2026>
 - **Issues / questions:** <https://github.com/artificial-scientist-lab/Learn2Design-2026/issues>
 - **Dataset guide:** [`dataset/README.md`](dataset/README.md)
@@ -376,8 +380,6 @@ Information about how to submit will be provided roughly on July 27th 2026.
 - **Benchmark framework:** [`dfbench`](docs/dfbench/Architecture-Overview.md)
 - **Group:** [Artificial Scientist Lab](https://www.artificial-scientist-lab.ai/)
 
-A website and contact email will be added before the competition
-opens.
 
 
 > [!TIP]
