@@ -40,7 +40,7 @@ Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific
 More Infos in the accepted proposal for [Learn2Design-2026](Learn2Design_details.pdf).
 
 > **Status:** Beta-Release. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
-> `dfbench` v0.2.0 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
+> `dfbench` v0.3.0 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
 
 
 ## Prize money
@@ -202,7 +202,7 @@ Via uv:
 uv sync --extra cuda13
 ```
 
-This pulls in [`dfbench`](https://github.com/artificial-scientist-lab/Differometor-Benchmark) (v0.2.0, the benchmark
+This pulls in [`dfbench`](https://github.com/artificial-scientist-lab/Differometor-Benchmark) (v0.3.0, the benchmark
 framework). `dfbench` in turn uses
 [`differometor`](https://github.com/artificial-scientist-lab/Differometor), the JAX-based
 interferometer simulator.
@@ -295,7 +295,7 @@ docs/
 ├── submission.md        # Submission rules
 ├── scoring.md           # Scoring and leaderboard details
 ├── FAQ.md               # Competition FAQ
-└── dfbench/             # dfbench 0.2.0 reference pages
+└── dfbench/             # dfbench 0.3.0 reference pages
     ├── Architecture-Overview.md
     ├── Objective-API-Reference.md
     ├── Problems.md
