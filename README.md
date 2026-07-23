@@ -9,16 +9,17 @@
 ## A physics experiment design competition for gravitational-wave detectors
 
 <p align="center">
-Jonathan Klimesch<sup>1</sup>, Laurin Sefa<sup>1</sup>, Soham Basu<sup>1</sup>, Priya Kanagasabapathi<sup>1</sup>,<br>
-Sören Arlt<sup>1</sup>, Xuemei Gu<sup>2</sup>, Thomas Christie<sup>1</sup>, Colin Doumont<sup>1</sup>,<br>
-Andreas Freise<sup>3</sup>, Rana Adhikari<sup>4</sup>, Philipp Hennig<sup>1</sup>, Mario Krenn<sup>1</sup>
+Jonathan Klimesch<sup>1,2</sup>, Laurin Sefa<sup>1</sup>, Soham Basu<sup>1</sup>, Priya Kanagasabapathi<sup>1</sup>,<br>
+Sören Arlt<sup>1,2</sup>, Xuemei Gu<sup>3</sup>, Thomas Christie<sup>1</sup>, Colin Doumont<sup>1</sup>,<br>
+Andreas Freise<sup>4</sup>, Rana Adhikari<sup>5</sup>, Philipp Hennig<sup>1</sup>, Mario Krenn<sup>1</sup>
 </p>
 
 <p align="center">
 <sup>1</sup>Department for Computer Science, Faculty of Science, University of Tübingen, Tübingen, Germany<br>
-<sup>2</sup>Institut für Festkörpertheorie und Optik, Friedrich-Schiller-Universität Jena, Jena, Germany<br>
-<sup>3</sup>Nikhef, National Institute for Subatomic Physics, Amsterdam, The Netherlands<br>
-<sup>4</sup>Institute for Quantum Information and Matter, California Institute of Technology, Pasadena, CA, USA
+<sup>2</sup>Feyer, Tübingen, Germany<br>
+<sup>3</sup>Institut für Festkörpertheorie und Optik, Friedrich-Schiller-Universität Jena, Jena, Germany<br>
+<sup>4</sup>Nikhef, National Institute for Subatomic Physics, Amsterdam, The Netherlands<br>
+<sup>5</sup>Institute for Quantum Information and Matter, California Institute of Technology, Pasadena, CA, USA
 </p>
 
 **Learn2Design-2026** is a NeurIPS 2026 challenge on the automated design of highly sensitive [gravitational-wave detectors](https://en.wikipedia.org/wiki/LIGO) under realistic experimental constraints.
@@ -32,16 +33,12 @@ The challenge provides the differentiable, JAX-based simulator **[Differometor](
 
 To support algorithm development, we also provide approximately **30,000 high-quality detector designs** generated through a **360,000 GPU-hour EuroHPC exploration campaign**. These examples can be used for supervised learning, initialization, representation learning, generative modeling, benchmarking, or other exploration and optimization approaches.
 
-Algorithms will be ranked by their hidden-evaluation performance, with **EUR 25,000** in prize money.
+Algorithms will be ranked by their hidden-evaluation performance, with **EUR 25,000** in prize money (sponsored by [SPRIND](https://www.sprind.org/)).
 
 Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific question:
 **Can AI systems discover scientific instruments that go beyond human intuition while remaining physically meaningful and experimentally constrained?**
 
 More Infos in the accepted proposal for [Learn2Design-2026](Learn2Design_details.pdf).
-
-> **Status:** Beta-Release. The starting kit is being finalized. Further baselines and results will be added before the start of the competition.
-> `dfbench` v0.3.1 is [public on PyPI](https://pypi.org/project/dfbench/). Its full documentation is available in the [dfbench wiki](https://github.com/artificial-scientist-lab/Differometor-Benchmark/wiki), with a bundled copy in [`docs/dfbench/`](docs/dfbench/).
-
 
 ## Prize money
 
@@ -356,7 +353,7 @@ gradient-based, evolutionary, surrogate-based, global_search, derivative_free an
 
 ## Submitting
 
-Information about how to submit will be provided roughly on July 20th 2026.
+Information about how to submit will be provided roughly on July 27th 2026.
 
 
 ## Timeline
@@ -364,7 +361,7 @@ Information about how to submit will be provided roughly on July 20th 2026.
 | Date | Event |
 |---|---|
 | 09.07.2026 | Start of competition |
-| Expected: 20.07.2026 | Submission Platform opens |
+| Expected: 27.07.2026 | Submission Platform opens |
 | 1st week of August, September, October | Release of public leaderboard from the latest submission before each monthly deadline |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
