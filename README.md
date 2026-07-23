@@ -4,9 +4,6 @@
 [![image](https://img.shields.io/pypi/pyversions/dfbench.svg)](https://pypi.python.org/pypi/dfbench)
 [![GitHub](https://img.shields.io/badge/GitHub-dfbench-3232c8?logo=github&logoColor=white)](https://github.com/artificial-scientist-lab/Differometor-Benchmark)
 
-<p align="center">
-  <img src="learn2design2026_with_neurips.jpg" alt="Learn2Design-2026 with NeurIPS" width="720">
-</p>
 
 ## A physics experiment design competition for gravitational-wave detectors
 
@@ -22,6 +19,10 @@ Andreas Freise<sup>4</sup>, Rana Adhikari<sup>5</sup>, Philipp Hennig<sup>1</sup
 <sup>3</sup>Institut für Festkörpertheorie und Optik, Friedrich-Schiller-Universität Jena, Jena, Germany<br>
 <sup>4</sup>Nikhef, National Institute for Subatomic Physics, Amsterdam, The Netherlands<br>
 <sup>5</sup>Institute for Quantum Information and Matter, California Institute of Technology, Pasadena, CA, USA
+</p>
+
+<p align="center">
+  <img src="learn2design2026_with_neurips.jpg" alt="Learn2Design-2026 with NeurIPS" width="720">
 </p>
 
 **Learn2Design-2026** is a NeurIPS 2026 challenge on the automated design of highly sensitive [gravitational-wave detectors](https://en.wikipedia.org/wiki/LIGO) under realistic experimental constraints.
