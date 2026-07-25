@@ -202,7 +202,7 @@ Via uv:
 uv sync --extra cuda13
 ```
 
-This pulls in [`dfbench`](https://github.com/artificial-scientist-lab/Differometor-Benchmark) (v0.3.1, the benchmark
+This pulls in [`dfbench`](https://github.com/artificial-scientist-lab/Differometor-Benchmark) (v0.3.2, the benchmark
 framework). `dfbench` in turn uses
 [`differometor`](https://github.com/artificial-scientist-lab/Differometor), the JAX-based
 interferometer simulator.

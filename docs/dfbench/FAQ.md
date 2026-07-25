@@ -121,7 +121,7 @@ Use SLURM's `--gres=gpu:1` to isolate GPU access, or set `CUDA_VISIBLE_DEVICES` 
 
 ### `Objective.save_run_data()` vs. benchmark saving
 
-[`Objective.save_run_data()`](Objective-API-Reference.md#io-methods) saves a single run (for development/debugging). The benchmark's `save_run_data` flag saves all runs for all algorithms in a structured directory with metadata for later re-evaluation.
+`Objective.save_run_data()` saves a single run (for development/debugging). The benchmark's `save_run_data` flag saves all runs for all algorithms in a structured directory with metadata for later re-evaluation.
 
 ### Legacy data format
 

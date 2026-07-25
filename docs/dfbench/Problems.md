@@ -32,11 +32,11 @@ Defines the minimal interface every problem must implement:
 | `bounds` | `Array[2, n_params]` | `[lower_bounds, upper_bounds]` for each parameter. |
 | `optimization_pairs` | `list[tuple[str, str]]` | `(component_name, property_name)` tuples mapping each parameter index to a Differometor component. |
 | `n_params` | `int` | Number of parameters = `len(optimization_pairs)`. |
-| `to_spec() -> dict` | `dict` | Reconstructive spec: a small, JSON-serialisable dict sufficient to rebuild an equivalent problem instance (see [Reconstruction & Problem Spec](#reconstruction-problem-spec) below). |
+| `to_spec() -> dict` | `dict` | Reconstructive spec: a small, JSON-serialisable dict sufficient to rebuild an equivalent problem instance (see [Reconstruction & Problem Spec](#reconstruction--problem-spec) below). |
 
 **Rationale: bounded problem contract:** Problems expose the bounded loss only; `Objective` owns any mapping required by algorithms that search in unbounded coordinates.
 
-**Rationale: reconstructive spec:** A checkpoint is only useful for resume or provenance if the originating problem can be rebuilt. `to_spec()` encodes the problem's constructor arguments so a saved run is fully self-describing (see [I/O Methods](Objective-API-Reference.md#io-methods)).
+**Rationale: reconstructive spec:** A checkpoint is only useful for resume or provenance if the originating problem can be rebuilt. `to_spec()` encodes the problem's constructor arguments so a saved run is fully self-describing (see [Storage & Checkpointing](Storage-and-Checkpointing)).
 
 ### `OpticalSetupProblem` (Optical Base)
 
@@ -49,7 +49,7 @@ Extends `ContinuousProblem` with optics-specific functionality shared by all Dif
 - **`signal_floor`:** All concrete problems floor detector signal magnitudes before sensitivity normalization. Defaults to `1e-20`.
 - **`print_bounds()`:** Prints the effective per-parameter bounds currently used by the problem.
 
-> **Note:** `OpticalSetupProblem` no longer has an `output_to_files` method. Human-readable JSON/PNG output is now a *derived view* produced by `RunDataExporter` from a `RunState` snapshot (see [I/O Methods](Objective-API-Reference.md#io-methods)). Keeping I/O on the problem was a responsibility violation: it mixed file layout, plotting, and timestamping into the mathematical problem definition.
+> **Note:** `OpticalSetupProblem` no longer has an `output_to_files` method. Human-readable JSON/PNG output is now a *derived view* produced by `RunDataExporter` from a `RunState` snapshot (see [I/O Methods](Objective-API-Reference#io-methods)). Keeping I/O on the problem was a responsibility violation: it mixed file layout, plotting, and timestamping into the mathematical problem definition.
 
 ---
 
@@ -177,8 +177,6 @@ problem = ConstrainedVoyagerProblem(n_frequencies=50, signal_floor=1e-20)
    - `SOFT_SIDE_POWER_THRESHOLD`: softer limit with gradual penalty
    - `DETECTOR_POWER_THRESHOLD`: maximum power on detector ports
 
-   The [interactive sensitivity loss explorer](../sensitivity_loss_explorer.html) shows how sensitivity changes, individual power violations, penalty functions, and feasibility combine into the scalar loss.
-
    For each component the configured `power_penalty_fn(value, threshold)` is called and the results are summed.  Three presets are provided:
 
    | Preset | Formula | Import |
@@ -199,7 +197,7 @@ problem = ConstrainedVoyagerProblem(n_frequencies=50, signal_floor=1e-20)
    problem = ConstrainedVoyagerProblem(power_penalty_fn=my_quadratic_penalty)
    ```
 
-   The penalty function can also be swapped **after** the problem has been constructed (e.g. after wrapping it in an `Objective`), via `Objective.set_penalty_fn(fn)`. This re-traces the problem's JIT-compiled `objective_function` and re-binds the Objective's cached evaluation callables, so the new penalty takes effect on subsequent evaluations. It must be called before `Objective.start_logging()`:
+   The penalty function can also be swapped **after** the problem has been constructed (e.g. after wrapping it in an `Objective`), via `Objective.set_penalty_fn(fn)`. This rebuilds the problem's JIT-compiled scalar and aux objectives and re-binds the Objective's cached evaluation callables, so the new penalty takes effect on subsequent evaluations. It must be called before `Objective.start_logging()`:
 
    ```python
    from dfbench import Objective
@@ -231,7 +229,7 @@ The constrained problems also expose a JIT-compiled `objective_function_aux(para
 
 Because `aux` is a JAX pytree, `objective_function_aux` vmapps cleanly: a batched call adds a leading batch dim to every leaf, including the `power_values` sub-arrays.
 
-The `Objective` wraps this with `value_aux`, `value_and_grad_aux`, `vmap_value_aux`, and `vmap_value_and_grad_aux`. These thread aux through logging and the save-token system: each aux field has its own token (`sensitivity_loss`, `penalty`, `is_feasible`, `power_values`, `violations`) plus a `batched_*` variant and `aux` / `batched_aux` convenience aliases. When a `batched_*` token is off and the non-batched token is on, batched aux entries are reduced to the representative point picked by the loss minimum, so the recorded `is_feasible` and `violations` reflect that best point. `Objective.best_is_feasible` reports the feasibility of the best-loss point from that recorded history. Full reference in the [Objective API Reference](Objective-API-Reference.md).
+The `Objective` wraps this with `value_aux`, `value_and_grad_aux`, `vmap_value_aux`, and `vmap_value_and_grad_aux`. These explicit methods—and standard value-bearing methods when an aux save token is selected—thread aux through logging without a second forward pass. Each aux field has its own token (`sensitivity_loss`, `penalty`, `is_feasible`, `power_values`, `violations`) plus a `batched_*` variant and `aux` / `batched_aux` convenience aliases. Derivative-only calls do not produce a primal aux pytree and append `None` to enabled aux histories. When a `batched_*` token is off and the non-batched token is on, aux from every batched value-bearing call, including a singleton batch, is reduced to the representative point picked by the loss minimum. `Objective.best_is_feasible` reports the feasibility of the best-loss point from that recorded history. Full reference in the [Objective API Reference](Objective-API-Reference).
 
 ---
 
@@ -389,6 +387,6 @@ If you add a new `ContinuousProblem` subclass:
 
 You do not need to override `to_problem_spec()`; the default implementation wraps `to_spec()` into the typed container automatically.
 
-See [I/O Methods](Objective-API-Reference.md#io-methods) for how the spec is embedded in checkpoints.
+See [I/O Methods](Objective-API-Reference#io-methods) for how the spec is embedded in checkpoints.
 
 ---
