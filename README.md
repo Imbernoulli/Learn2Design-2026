@@ -356,7 +356,7 @@ gradient-based, evolutionary, surrogate-based, global_search, derivative_free an
 
 ## Submitting
 
-Information about how to submit will be provided roughly on July 27th 2026.
+Information about how to submit will be provided roughly on 7th of August 2026.
 
 
 ## Timeline
@@ -364,7 +364,7 @@ Information about how to submit will be provided roughly on July 27th 2026.
 | Date | Event |
 |---|---|
 | 09.07.2026 | Start of competition |
-| Expected: 27.07.2026 | Submission Platform opens |
+| Expected: 07.08.2026 | Submission Platform opens |
 | 1st week of August, September, October | Release of public leaderboard from the latest submission before each monthly deadline |
 | 15.10.2026 | Final submission deadline |
 | Before workshop | Private leaderboard announced |
