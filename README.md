@@ -55,6 +55,9 @@ Prize eligibility requires the submission of an, initally confidential, *short t
 
 The prize money is sponsored by [SPRIND (Federal Agency for Disruptive Innovation / Bundesagentur für Sprunginnovationen)](https://www.sprind.org/).
 
+### Eligibility
+
+Participation is open worldwide, subject to applicable laws and the eligibility requirements of NeurIPS and SPRIND. Participants based in Russia are not eligible to receive prize money. Individuals and institutions subject to applicable sanctions, including those on the U.S. SDN list, are also ineligible.
 
 ## Technical reports and post-competition publication
 
