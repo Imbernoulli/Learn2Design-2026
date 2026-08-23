@@ -75,6 +75,36 @@ class WarmStartIndex:
         self._donor_cache: dict[str, tuple[np.ndarray, dict[str, float]]] = {}
         self._sens: np.ndarray | None = None
         self._key_cache = self._load_key_cache()
+        self._elite_medians_computed = False
+        self._elite_medians: dict | None = None
+
+    def elite_key_medians(self) -> dict | None:
+        """Global per-key median among bottom-decile-loss entries (canonical npz).
+
+        A better fill prior than the donor's own siblings: conditional on the
+        key existing, what value do ELITE entries across all topologies take?
+        Computed lazily once per run (only when fill_mode="elite" is used)."""
+        if self._elite_medians_computed:
+            return self._elite_medians
+        self._elite_medians_computed = True
+        self._elite_medians = None
+        try:
+            if CANONICAL_NPZ.exists():
+                d = np.load(CANONICAL_NPZ, allow_pickle=True)
+                keys = d["keys"]
+                X, M, L = d["X"], d["M"], d["L"]
+                valid = M.sum(axis=1) > 0
+                thr = np.percentile(L[valid], 10)
+                elite = valid & (L <= thr)
+                Xe, Me = X[elite], M[elite]
+                cnt = Me.sum(axis=0)
+                meds = {}
+                for j in np.where(cnt >= 20)[0]:
+                    meds[str(keys[j])] = float(np.median(Xe[Me[:, j], j]))
+                self._elite_medians = meds
+        except Exception:
+            pass
+        return self._elite_medians
 
     @staticmethod
     def _load_key_cache():
@@ -244,12 +274,17 @@ class WarmStartIndex:
                             n_copied += 1
                             break
                 if val is None:
-                    prop = k.split("|")[1].strip("'")
-                    pool = prop_pool.get(prop)
-                    if fill == "donor_sibling" and pool:
-                        val = float(np.median(pool))
-                    else:
-                        val = 0.5 * (lb[i] + ub[i])
+                    if fill == "elite":
+                        em = self.elite_key_medians()
+                        if em is not None:
+                            val = em.get(k)
+                    if val is None:
+                        prop = k.split("|")[1].strip("'")
+                        pool = prop_pool.get(prop)
+                        if fill != "midpoint" and pool:
+                            val = float(np.median(pool))
+                        else:
+                            val = 0.5 * (lb[i] + ub[i])
                 out[i] = val
             out[i] = float(np.clip(out[i], lb[i], ub[i]))
         self.last_fill_ratio = n_copied / max(len(tgt_keys), 1)
@@ -392,7 +427,13 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
         kick_roi_backoff: float = 2.0,
         kick_roi_cap: float = 8.0,
         kick_patience_stretch: float = 0.0,
+        fill_mode: str = "donor_sibling",
+        restart_fracs: tuple = (),
+        restart_lr_frac: float = 0.6,
     ):
+        self.fill_mode = fill_mode
+        self.restart_fracs = tuple(restart_fracs)
+        self.restart_lr_frac = restart_lr_frac
         self.n_chains = n_chains
         self.n_transplant = n_transplant
         self.lr = lr
@@ -714,7 +755,7 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                     donors = ordered
                 aux = self._aux_kvs(ws, donors)
                 for topo, dist, dloss, eidx in donors:
-                    v = ws.transplant(obj._problem, topo, eidx, aux_kvs=aux)
+                    v = ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux)
                     starts.append(v)
                     self.phase_log.append(
                         f"donor dist={dist:.0f} loss={dloss:.3f} fill={ws.last_fill_ratio:.2f} topo={topo}")
@@ -1096,8 +1137,22 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
             # decay_onset: WSD-style stable phase before cooldown (Hägele et al.
             # NeurIPS 2024 — constant LR then ~20% cooldown matches full decay).
             # onset=0 → q=prog → legacy from-start linear decay (bit-identical).
-            q = 1.0 if self.decay_onset >= 1.0 else min(1.0, max(0.0, (prog - self.decay_onset) / (1.0 - self.decay_onset)))
-            lr_t = self.lr * (self.lr_final_frac + (1 - self.lr_final_frac) * (1 - q))
+            if self.restart_fracs:
+                # SGDR-style warm restarts: segmented linear decay. Each restart
+                # re-peaks lr at restart_lr_frac of base and decays to the next
+                # restart point (or 1.0) — a second exploration phase that can
+                # break the monoculture plateau on stuck seeds.
+                s, peak = 0.0, self.lr
+                for r in self.restart_fracs:
+                    if prog >= r:
+                        s, peak = r, self.lr * self.restart_lr_frac
+                nxt = [r for r in self.restart_fracs if r > prog]
+                e = nxt[0] if nxt else 1.0
+                q = min(1.0, max(0.0, (prog - s) / max(e - s, 1e-9)))
+                lr_t = peak * (self.lr_final_frac + (1 - self.lr_final_frac) * (1 - q))
+            else:
+                q = 1.0 if self.decay_onset >= 1.0 else min(1.0, max(0.0, (prog - self.decay_onset) / (1.0 - self.decay_onset)))
+                lr_t = self.lr * (self.lr_final_frac + (1 - self.lr_final_frac) * (1 - q))
             sig_t = self.noise_final + (self.noise0 - self.noise_final) * max(0.0, 1 - prog / self.noise_decay_prog)
             if self.tr_window_prog > 0:
                 upd = (lr_t * jnp.asarray(self._lr_mult)[:, None]) * mhat / (jnp.sqrt(vhat) + self.eps)
@@ -1299,7 +1354,7 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                                 di = self._pick_donor(donors)
                                 topo, dist, dloss, eidx = donors[di]
                                 self._mark_donor(donors[di])
-                                v = ws.transplant(obj._problem, topo, eidx, aux_kvs=aux)
+                                v = ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux)
                                 Xnp[ci] = np.asarray(_to_unbounded(v[None, :]))[0] + self._ksig(j) * rng.standard_normal(n)
                             n_new += 1
                     elif donors is not None and self.kick_diverse:
@@ -1313,7 +1368,7 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                         for donor in donors:
                             topo, dist, dloss, eidx = donor
                             try:
-                                cands.append(np.asarray(ws.transplant(obj._problem, topo, eidx, aux_kvs=aux),
+                                cands.append(np.asarray(ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux),
                                                         dtype=np.float64))
                                 cand_donors.append(donor)
                             except Exception:
@@ -1342,7 +1397,7 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                             di = self._pick_donor(donors)
                             topo, dist, dloss, eidx = donors[di]
                             self._mark_donor(donors[di])
-                            v = ws.transplant(obj._problem, topo, eidx, aux_kvs=aux)
+                            v = ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux)
                             Xnp[ci] = np.asarray(_to_unbounded(v[None, :]))[0] + self._ksig(j) * rng.standard_normal(n)
                             n_new += 1
                     X = jnp.asarray(Xnp)
@@ -1491,7 +1546,7 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
 # ---- baked submission hyperparameters (single-class rule) ----
 import json as _json
 
-_BAKED_KWARGS = _json.loads('{"lr": 0.2, "n_chains": 16, "n_transplant": 96, "screen_pool": 1024, "kick_patience_prog": 0.05, "kick_max_prog": 0.6, "kick_diverse": true, "donor_loss_weight": 0.5, "select_fracs": [0.5, 0.8], "select_rule": "extrap", "resume_prog_fix": true, "noise0": 0.0, "noise_final": 0.0, "screen_diverse": 64, "kick_protect_prog": 0.1, "deme2_frac": 0.5, "deme2_kick_schedule": [0.32, 0.52], "deme_select": "within"}')
+_BAKED_KWARGS = _json.loads('{"lr": 0.2, "n_chains": 16, "n_transplant": 96, "screen_pool": 1024, "kick_patience_prog": 0.05, "kick_max_prog": 0.6, "kick_diverse": true, "donor_loss_weight": 0.5, "select_fracs": [0.3, 0.5, 0.7, 0.85], "resume_prog_fix": true, "noise0": 0.0, "noise_final": 0.0, "screen_diverse": 64, "kick_protect_prog": 0.1, "deme2_frac": 0.5, "deme2_kick_schedule": [0.32, 0.52], "deme_select": "within"}')
 _orig_init_ParallelAdamSubmission = ParallelAdamSubmission.__init__
 
 

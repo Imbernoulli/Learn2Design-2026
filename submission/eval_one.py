@@ -28,6 +28,7 @@ def main():
     ap.add_argument("--kwargs", type=str, default="{}", help="JSON overrides for the algorithm")
     ap.add_argument("--baseline", type=str, default="", help="run an example baseline instead (e.g. adam_gd)")
     ap.add_argument("--ckpt-interval", type=float, default=120.0, help="chain-state checkpoint interval (s); 0 disables")
+    ap.add_argument("--algo", type=str, default="parallel_adam_submission", help="submission module name (e.g. pa_xvar)")
     args = ap.parse_args()
 
     from dfbench.problems import UIFOProblem
@@ -54,10 +55,11 @@ def main():
             opt.optimize(obj, learning_rate=0.1, random_seed=args.seed)
             best = obj.best_loss
         else:
-            from submission.parallel_adam_submission import ParallelAdamSubmission
+            import importlib
 
+            mod = importlib.import_module(f"submission.{args.algo}")
             kw = json.loads(args.kwargs)
-            algo = ParallelAdamSubmission(**kw)
+            algo = mod.ParallelAdamSubmission(**kw)
             # harness-level instrumentation (no algorithm change): periodic
             # full chain-state checkpoints -> internal metrics for analysis
             if args.ckpt_interval > 0:
