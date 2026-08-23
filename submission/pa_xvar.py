@@ -20,11 +20,53 @@ from dfbench import Objective, OptimizationAlgorithm
 _HERE = Path(__file__).resolve().parent
 DEFAULT_DATASET = _HERE / "dataset.h5"
 CANONICAL_NPZ = _HERE / "canonical_index.npz"
+SURROGATE_PKL = _HERE / "surrogate_hgb.pkl"
 CKEYS_DIR = _HERE / "ckeys_nonexistent"  # canonical npz is bundled instead
 CACHE_PATH = _HERE / "cache_nonexistent"
 
 
 import json
+
+
+class _Surrogate:
+    """Lazy-loaded HGB surrogate: canonical (key,value) space -> log1p(loss).
+
+    Trained on the full Differometor-30k canonical index (28,863 entries,
+    held-out-topology Spearman 0.918). Instance-independent: model and key
+    columns load from bundled files, usable before start_logging; candidate
+    keys are mapped at query time (post-logging)."""
+    model = None
+    key_to_col = None
+    tried = False
+
+    @classmethod
+    def load(cls):
+        if not cls.tried:
+            cls.tried = True
+            try:
+                if SURROGATE_PKL.exists():
+                    import pickle
+
+                    with open(SURROGATE_PKL, "rb") as f:
+                        cls.model = pickle.load(f)
+                    d = np.load(CANONICAL_NPZ, allow_pickle=True)
+                    cls.key_to_col = {str(k): i for i, k in enumerate(d["keys"])}
+            except Exception:
+                cls.model = None
+        return cls.model
+
+
+def surrogate_score(problem, Cb: np.ndarray):
+    """Score bounded candidates (B,n) with the surrogate. Returns (B,) or None."""
+    m = _Surrogate.load()
+    if m is None:
+        return None
+    keys = problem_pair_keys(problem)
+    cols = np.array([_Surrogate.key_to_col.get(k, -1) for k in keys])
+    ok = cols >= 0
+    Xc = np.full((Cb.shape[0], len(_Surrogate.key_to_col)), np.nan)
+    Xc[:, cols[ok]] = Cb[:, ok]
+    return m.predict(Xc)
 
 
 def _pair_key(pair) -> str:
@@ -430,10 +472,16 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
         fill_mode: str = "donor_sibling",
         restart_fracs: tuple = (),
         restart_lr_frac: float = 0.6,
+        surr_screen: int = 0,
+        surr_kick: int = 0,
+        surr_keep_frac: float = 0.0,
     ):
         self.fill_mode = fill_mode
         self.restart_fracs = tuple(restart_fracs)
         self.restart_lr_frac = restart_lr_frac
+        self.surr_screen = surr_screen
+        self.surr_kick = surr_kick
+        self.surr_keep_frac = surr_keep_frac
         self.n_chains = n_chains
         self.n_transplant = n_transplant
         self.lr = lr
@@ -761,6 +809,48 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                         f"donor dist={dist:.0f} loss={dloss:.3f} fill={ws.last_fill_ratio:.2f} topo={topo}")
             except Exception as e:  # never let warm start kill the run
                 self.phase_log.append(f"warmstart_failed: {e!r}")
+        # --- surrogate pre-filter: expand all transplants into a large bounded
+        # candidate pool, score with the surrogate (free, CPU), keep a diverse
+        # top-n_chains. Replaces donor-rank truncation with predicted quality.
+        if self.surr_screen > 0 and ws is not None and len(starts) > 0:
+            try:
+                t_ss = time.perf_counter()
+                base = np.asarray(starts, dtype=np.float64)
+                span = ub - lb
+                rng2 = np.random.default_rng(1234)
+                parts = [base]
+                remain = self.surr_screen - len(base)
+                for sig in (0.03, 0.1, 0.3):
+                    k = remain // 3
+                    idx = rng2.integers(0, len(base), size=k)
+                    jb = base[idx] + sig * span[None, :] * rng2.standard_normal((k, base.shape[1]))
+                    parts.append(np.clip(jb, lb, ub))
+                Cb = np.concatenate(parts)
+                sc = surrogate_score(obj._problem, Cb)
+                if sc is not None:
+                    # hybrid (surr_keep_frac>0): keep the top raw transplants
+                    # as insurance — the surrogate over-trusts its own error on
+                    # jittered points (seed-105 lesson: pred 0.013, true 0.426),
+                    # so proven donor starts must survive to the real-eval
+                    # screen; only the remaining slots go to surrogate picks.
+                    n_keep = min(int(round(self.n_chains * self.surr_keep_frac)),
+                                 len(base), self.n_chains)
+                    n_surr = self.n_chains - n_keep
+                    short = np.argsort(sc)[: max(n_surr * 4, 64)]
+                    Cn = (Cb[short] - lb[None, :]) / span[None, :]
+                    chosen = [0]
+                    dmin = np.linalg.norm(Cn - Cn[0][None, :], axis=1)
+                    while len(chosen) < n_surr:
+                        j = int(np.argmax(dmin))
+                        chosen.append(j)
+                        dmin = np.minimum(dmin, np.linalg.norm(Cn - Cn[j][None, :], axis=1))
+                    picks = list(Cb[short[np.asarray(chosen)]])
+                    starts = list(base[:n_keep]) + picks
+                    self.phase_log.append(
+                        f"surr_screen: {len(Cb)} cands -> keep {n_keep} raw + {len(picks)} surr "
+                        f"in {time.perf_counter()-t_ss:.0f}s, pred_best={sc[short[0]]:.3f}")
+            except Exception as e:  # noqa
+                self.phase_log.append(f"surr_screen_failed: {e!r}")
         rng = np.random.default_rng(int(jax.random.bits(key)))
         n_fill = self.n_chains - len(starts)
         if n_fill > 0:
@@ -1356,6 +1446,27 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                                 self._mark_donor(donors[di])
                                 v = ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux)
                                 Xnp[ci] = np.asarray(_to_unbounded(v[None, :]))[0] + self._ksig(j) * rng.standard_normal(n)
+                            n_new += 1
+                    elif donors is not None and self.surr_kick:
+                        # surrogate-ranked kick: transplant the whole donor pool,
+                        # keep the candidates the surrogate likes most (replaces
+                        # cycle/diverse selection with predicted quality)
+                        cands, cd = [], []
+                        for donor in donors:
+                            topo, dist, dloss, eidx = donor
+                            try:
+                                cands.append(np.asarray(ws.transplant(obj._problem, topo, eidx, fill=self.fill_mode, aux_kvs=aux),
+                                                        dtype=np.float64))
+                                cd.append(donor)
+                            except Exception:
+                                continue
+                        sc = surrogate_score(obj._problem, np.asarray(cands)) if cands else None
+                        order_k2 = np.argsort(sc) if sc is not None else np.arange(len(cd))
+                        for j, ci in enumerate(kick_idx):
+                            if j >= len(cd):
+                                break
+                            self._mark_donor(cd[order_k2[j]])
+                            Xnp[ci] = np.asarray(_to_unbounded(cands[order_k2[j]][None, :]))[0] + self._ksig(j) * rng.standard_normal(n)
                             n_new += 1
                     elif donors is not None and self.kick_diverse:
                         # farthest-point sampling among transplanted candidates:
