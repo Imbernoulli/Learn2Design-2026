@@ -475,7 +475,9 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
         surr_screen: int = 0,
         surr_kick: int = 0,
         surr_keep_frac: float = 0.0,
+        surr_recomb: int = 0,
     ):
+        self.surr_recomb = surr_recomb
         self.fill_mode = fill_mode
         self.restart_fracs = tuple(restart_fracs)
         self.restart_lr_frac = restart_lr_frac
@@ -820,6 +822,19 @@ class ParallelAdamSubmission(OptimizationAlgorithm):
                 rng2 = np.random.default_rng(1234)
                 parts = [base]
                 remain = self.surr_screen - len(base)
+                if self.surr_recomb:
+                    # structured recombination in transplant space: each child
+                    # takes every component-position group from a random parent
+                    # transplant (uniform crossover over _position_groups) —
+                    # explores the donor lattice, not just Gaussian tubes.
+                    gids = _position_groups(obj._problem._optimization_pairs)
+                    G = gids.max() + 1
+                    k = remain // 2
+                    pa = base[rng2.integers(0, len(base), size=k)]
+                    pb = base[rng2.integers(0, len(base), size=k)]
+                    pick_b = (rng2.random((k, G)) < 0.5)[:, gids]
+                    parts.append(np.where(pick_b, pb, pa))
+                    remain -= k
                 for sig in (0.03, 0.1, 0.3):
                     k = remain // 3
                     idx = rng2.integers(0, len(base), size=k)
